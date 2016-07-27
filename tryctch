@@ -1,0 +1,93 @@
+#!/usr/bin/python3
+
+import sqlite3
+import sys
+
+
+def connect_db():
+    try:
+        db = sqlite3.connect('tester.db')
+    except sqlite3.OperationalError as oe:
+        print("Cannot connect to db: {}".format(oe))
+        sys.exit(1)
+    else:
+        cursor = db.cursor()
+        return (db, cursor)
+
+
+def init_db():
+    try:
+        cursor.execute('''CREATE TABLE requests (
+                            reqid INTEGER PRIMARY KEY,
+                            name TEXT,
+                            address TEXT,
+                            email TEXT unique,
+                            citystatezip TEXT,
+                            username TEXT unique)''')
+    except sqlite3.OperationalError as oe:
+        pass
+    else:
+        db.commit()
+
+
+
+def insert_values():
+    try:
+        cursor.execute('''INSERT INTO requests (name, address, email, citystatezip, username)
+                VALUES (?, ?, ?, ?, ?)''',
+                (name, address, email, citystatezip, username))
+    except sqlite3.IntegrityError as ie:
+        print("Unable to insert: ", end='')
+        if 'username' in str(ie):
+            print("username {} was previously requested.".format(username))
+        elif 'email' in str(ie):
+            print("email address {} is associated with a previous request.".format(email))
+        print()
+    else:
+        db.commit()
+
+
+
+def print_queue():
+    try:
+        cursor.execute('''SELECT reqid, name, address, email, citystatezip, username FROM requests''')
+    except sqlite3.OperationalError as oe:
+        print("Can't select: {}".format(str(oe)))
+    else:
+        for user in cursor:
+            print('''Request Id: {reqid}
+Name: {name}
+Current email: {email}
+Street Address: {address}
+City, State, Zip: {citystatezip}
+Preferred User ID: {userid}
+'''.format(
+                reqid=user[0],
+                name=user[1],
+                address=user[2],
+                email=user[3],
+                citystatezip=user[4],
+                userid=user[5],
+                )
+            )
+
+def delete(reqid):
+    try:
+        cursor.execute('''DELETE FROM requests WHERE reqid = ?''', (reqid, ))
+    except sqlite3.OperationalError as oe:
+        print("Can't delete: {}".format(str(oe)))
+    else:
+        print("removing")
+        db.commit()
+
+name = 'John Jacob Jingleheimerschmidt'
+address = '123 Main St'
+email = 'foo@example.com'
+citystatezip = 'Jonestown, KY 12346'
+username = 'jjj'
+
+db, cursor = connect_db()
+init_db()
+insert_values()
+print_queue()
+delete(1)

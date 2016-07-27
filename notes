@@ -1,0 +1,47 @@
+First name*:    
+Last name*:     
+Email address*:     
+Postal address 1*:  
+Postal address 2:   
+City*:  
+State*:     
+Zip code*:  
+
+www
+    cgi/reg
+        if no vars
+            print form
+        if vars
+            if validated
+                add to sqlite list
+                print thanks
+    *JS*
+        required fields
+
+
+steering
+    ??
+        if no vars
+            list queued requests
+                checkboxes
+                    create - makes the requested acct
+                    modify - changes the info for the account (can create at the same time)
+                    delete - remove the request without creating the account
+        if vars
+            if validated
+                take requested action(s):
+                    create
+                        adds member(s) to membership db
+                            looks up requests by id based off of form
+                            NOT FROM FORM DATA UNLESS MODIFY IS ALSO SET
+                        writes a batchfile to the filesystem which can be fed to /u/l/b/new-accounts-from-file
+                        prints instructions for the sc member
+                    modify
+                        if create, use data from form to create
+                        if not, modify reqdb entry based on form data
+                    delete
+                        delete req by id
+                print thanks
+            else
+                print help
+

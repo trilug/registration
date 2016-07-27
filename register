@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+
+import cgi
+import cgitb
+import sqlite3
+
+import reg_form
+from reg_request_db import RegDb
+
+debugdir = '/tmp'
+datadir  = '/var/spool/registration'
+dbfile   = '{}/account_queue.db'.format(datadir)
+
+reg_db = RegDb(dbfile)
+
+cgitb.enable(display=0, logdir=debugdir)
+the_form = cgi.FieldStorage()
+
+print('Content-type: text/html\n')
+if "email" not in the_form:
+    reg_form.print_form()
+
+else:
+    print('''{start}\n<body>'''.format(start=reg_form.header))
+
+    if "addr2" in the_form:
+        reg_db.insert(the_form["first"].value, the_form["last"].value,
+            the_form["email"].value, the_form["addr1"].value, the_form["city"].value,
+            the_form["state"].value, the_form["zipcode"].value, the_form["username"].value,
+            the_form["addr2"].value)
+    else:
+        reg_db.insert(the_form["first"].value, the_form["last"].value,
+            the_form["email"].value, the_form["addr1"].value, the_form["city"].value,
+            the_form["state"].value, the_form["zipcode"].value, the_form["username"].value)
+
+    reg_db.print_queue()
+    print('</body>\n{end}'.format(end=reg_form.footer))
