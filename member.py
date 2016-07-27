@@ -13,7 +13,7 @@ class Member():
 
     def values(self):
         all_values = (self.first, self.last, self.email, self.addr1)
-        if self.addr2 != None:
+        if self.addr2:
             all_values.append(self.addr2)
 		all_values.append(self.city, self.state, self.zipcode, self.username)
 
@@ -21,15 +21,15 @@ class Member():
 
     def field_names(self):
         all_field_names = ('first', 'last', 'email', 'addr1')
-        if self.addr2 != None:
+        if self.addr2:
             all_field_names.append('addr2')
 		all_field_names.append('city', 'state', 'zipcode', 'username')
 
         return all_field_names
 
     def field_count(self):
-        if self.addr2 == None:
-            return 8
-        else:
+        if self.addr2:
             return 9
+        else:
+            return 8
 
