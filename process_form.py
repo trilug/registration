@@ -2,7 +2,7 @@ header = '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http
 
 <html>
 <head>
-    <title>Join TriLUG!</title>
+    <title>TriLUG Membership Requests</title>
 </head>
 
 <body>

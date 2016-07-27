@@ -1,6 +1,10 @@
 import sqlite3
 import sys
 
+from member import Member
+
+_tablename = 'requests'
+
 class RegDb():
 
     def __init__(self, dbfile):
@@ -16,7 +20,7 @@ class RegDb():
 
         '''Try to create the db if it doesn't already exist.'''
         try:
-            self._cursor.execute('''CREATE TABLE requests (
+            self._cursor.execute('''CREATE TABLE {} (
                                 regid INTEGER PRIMARY KEY,
                                 first TEXT,
                                 last TEXT,
@@ -26,7 +30,7 @@ class RegDb():
                                 city TEXT,
                                 state TEXT,
                                 zipcode INTEGER,
-                                username TEXT unique)''')
+                                username TEXT unique)'''.format(_tablename))
         except sqlite3.OperationalError as oe:
             pass
         else:
@@ -34,20 +38,17 @@ class RegDb():
 
 
 
-    # first, last, email, addy1, addy2, city, state, zipcode, username
-    def insert(self, first, last, email, addr1,
-            city, state, zipcode, username, addr2=None):
+    def insert(new_member):
+
         try:
-            if addr2:
-                self._cursor.execute('''INSERT INTO requests
-                    (first, last, email, addr1, addr2, city, state, zipcode, username)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                    (first, last, email, addr1, addr2, city, state, zipcode, username))
-            else:
-                self._cursor.execute('''INSERT INTO requests
-                    (first, last, email, addr1, city, state, zipcode, username)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-                    (first, last, email, addr1, city, state, zipcode, username))
+            self._cursor.execute('INSERT INTO {table}
+                        ({fields}) VALUES ({places})'.format(
+                                table  = _tablename,
+                                fields = ', '.join(new_member.field_names()),
+                                places = ', '.join(list('?' * new_member.field_count()))
+                            ),
+                        new_member.values()
+                        )
         except sqlite3.IntegrityError as ie:
             # TODO: Make this re-raise up the stack rather than printing.
             print("Unable to insert: ", end='')
@@ -61,13 +62,13 @@ class RegDb():
 
     def delete(self, regid):
         # TODO: set up try/catch with sqlite3.OperationalError
-        self._cursor.execute('''DELETE FROM requests WHERE regid = ?''', regid)
+        self._cursor.execute('''DELETE FROM {} WHERE regid = ?'''.format(_tablename), regid)
 
     def print_queue(self):
         self._cursor.execute('''SELECT
                     regid, first, last, email,
                     addr1, addr2, city, state, zipcode, username
-                    FROM requests''')
+                    FROM {}'''.format(_tablename))
         for user in self._cursor:
             # Thought about making these simple positional parameters to format
             # and then just passing '*user[:]', but the names make this a bit

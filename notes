@@ -45,3 +45,7 @@ steering
             else
                 print help
 
+objects
+    member - data only(?)
+        everything takes a member, so we get away from positional params and that maintenance hell
+    regdb

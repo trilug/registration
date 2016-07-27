@@ -4,6 +4,7 @@ import cgi
 import cgitb
 import sqlite3
 
+import member import Member
 import reg_form
 from reg_request_db import RegDb
 
@@ -16,22 +17,23 @@ reg_db = RegDb(dbfile)
 cgitb.enable(display=0, logdir=debugdir)
 the_form = cgi.FieldStorage()
 
+
 print('Content-type: text/html\n')
+
 if "email" not in the_form:
     reg_form.print_form()
 
 else:
-    print('''{start}\n<body>'''.format(start=reg_form.header))
+    print(reg_form.header)
 
+    the_member = Member(*list(the_form[var].value for var in 
+                    ("first", "last", "email", "addr1",
+                        "city", "state", "zipcode", "username")))
     if "addr2" in the_form:
-        reg_db.insert(the_form["first"].value, the_form["last"].value,
-            the_form["email"].value, the_form["addr1"].value, the_form["city"].value,
-            the_form["state"].value, the_form["zipcode"].value, the_form["username"].value,
-            the_form["addr2"].value)
-    else:
-        reg_db.insert(the_form["first"].value, the_form["last"].value,
-            the_form["email"].value, the_form["addr1"].value, the_form["city"].value,
-            the_form["state"].value, the_form["zipcode"].value, the_form["username"].value)
+        the_member.addr2 = the_form["addr2"].value
+
+    reg_db.insert(the_member)
 
     reg_db.print_queue()
-    print('</body>\n{end}'.format(end=reg_form.footer))
+
+    print(reg_form.footer)
