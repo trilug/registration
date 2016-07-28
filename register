@@ -19,7 +19,7 @@ the_form = cgi.FieldStorage()
 print('Content-type: text/html\n')
 
 if "email" not in the_form:
-    reg_form.print_form()
+    print(reg_form.full_form)
 
 else:
     try:

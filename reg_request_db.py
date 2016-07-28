@@ -1,5 +1,4 @@
 import sqlite3
-import sys
 
 from member import Member
 
@@ -33,7 +32,7 @@ class RegDb():
                                 zipcode INTEGER,
                                 username TEXT unique)'''.format(_tablename))
 
-        except sqlite3.OperationalError as oe:
+        except sqlite3.OperationalError:
             pass
 
         else:

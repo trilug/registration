@@ -17,26 +17,31 @@ the_form = cgi.FieldStorage()
 print('Content-type: text/html\n')
 
 if "email" not in the_form:
-    process_form.print_form()
+    print(process_form.full_form)
 
 else:
     try:
         reg_db = RegDb(dbfile)
 
-    except:
+    except ConnectionError as ce:
         print('''{start}
 
 <h1>Internal Error</h1>
 
-The registration system is currently unavailable.  Please try back later.
+<p>The registration system is currently unavailable.  Please try back later.</p>
 
-{end}'''.format(start=process_form.header, end=process_form.footer))
+<p>Exception:</br>
+{the_error}
+</p>
 
-        sys.exit(1)
+{end}'''.format(start     = process_form.header,
+                end       = process_form.footer,
+                the_error = ce)
+        )
 
     else:
         # TODO: Rework for processing registrations...
-        print('''{start}\n<body>'''.format(start=process_form.header))
+        print(process_form.header)
 
         if "addr2" in the_form:
             reg_db.insert(the_form["first"].value, the_form["last"].value,
@@ -49,4 +54,4 @@ The registration system is currently unavailable.  Please try back later.
                 the_form["state"].value, the_form["zipcode"].value, the_form["username"].value)
 
         reg_db.print_queue()
-        print('</body>\n{end}'.format(end=process_form.footer))
+        print(process_form.footer)

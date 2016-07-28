@@ -10,8 +10,7 @@ header = '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http
 
 footer = '</body>\n</html>'
 
-def print_form():
-    print('''{start}
+full_form = '''{start}
 
 <form method="POST" action="/cgi-bin/register">
 First Name: <input type="text" name="first">  
@@ -28,5 +27,5 @@ Preferred User ID: <input type="text" name="username"></br>
 </form>
 
 {end}
-    '''.format(start=header, end=footer))
+    '''.format(start=header, end=footer)
 
