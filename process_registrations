@@ -11,8 +11,6 @@ debugdir = '/tmp'
 datadir  = '/var/spool/registration'
 dbfile   = '{}/account_queue.db'.format(datadir)
 
-reg_db = RegDb(dbfile)
-
 cgitb.enable(display=0, logdir=debugdir)
 the_form = cgi.FieldStorage()
 
@@ -22,17 +20,33 @@ if "email" not in the_form:
     process_form.print_form()
 
 else:
-    print('''{start}\n<body>'''.format(start=process_form.header))
+    try:
+        reg_db = RegDb(dbfile)
 
-    if "addr2" in the_form:
-        reg_db.insert(the_form["first"].value, the_form["last"].value,
-            the_form["email"].value, the_form["addr1"].value, the_form["city"].value,
-            the_form["state"].value, the_form["zipcode"].value, the_form["username"].value,
-            the_form["addr2"].value)
+    except:
+        print('''{start}
+
+<h1>Internal Error</h1>
+
+The registration system is currently unavailable.  Please try back later.
+
+{end}'''.format(start=process_form.header, end=process_form.footer))
+
+        sys.exit(1)
+
     else:
-        reg_db.insert(the_form["first"].value, the_form["last"].value,
-            the_form["email"].value, the_form["addr1"].value, the_form["city"].value,
-            the_form["state"].value, the_form["zipcode"].value, the_form["username"].value)
+        # TODO: Rework for processing registrations...
+        print('''{start}\n<body>'''.format(start=process_form.header))
 
-    reg_db.print_queue()
-    print('</body>\n{end}'.format(end=process_form.footer))
+        if "addr2" in the_form:
+            reg_db.insert(the_form["first"].value, the_form["last"].value,
+                the_form["email"].value, the_form["addr1"].value, the_form["city"].value,
+                the_form["state"].value, the_form["zipcode"].value, the_form["username"].value,
+                the_form["addr2"].value)
+        else:
+            reg_db.insert(the_form["first"].value, the_form["last"].value,
+                the_form["email"].value, the_form["addr1"].value, the_form["city"].value,
+                the_form["state"].value, the_form["zipcode"].value, the_form["username"].value)
+
+        reg_db.print_queue()
+        print('</body>\n{end}'.format(end=process_form.footer))

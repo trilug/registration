@@ -3,6 +3,7 @@
 import cgi
 import cgitb
 import sqlite3
+import sys
 
 import member import Member
 import reg_form
@@ -12,11 +13,8 @@ debugdir = '/tmp'
 datadir  = '/var/spool/registration'
 dbfile   = '{}/account_queue.db'.format(datadir)
 
-reg_db = RegDb(dbfile)
-
 cgitb.enable(display=0, logdir=debugdir)
 the_form = cgi.FieldStorage()
-
 
 print('Content-type: text/html\n')
 
@@ -24,16 +22,35 @@ if "email" not in the_form:
     reg_form.print_form()
 
 else:
-    print(reg_form.header)
+    try:
+        reg_db = RegDb(dbfile)
 
-    the_member = Member(*list(the_form[var].value for var in 
-                    ("first", "last", "email", "addr1",
-                        "city", "state", "zipcode", "username")))
-    if "addr2" in the_form:
-        the_member.addr2 = the_form["addr2"].value
+    except:
+        print('''{start}
 
-    reg_db.insert(the_member)
+<h1>Internal Error</h1>
 
-    reg_db.print_queue()
+The registration system is currently unavailable.  Please try back later.
 
-    print(reg_form.footer)
+{end}'''.format(start=reg_form.header, end=reg_form.footer))
+
+        sys.exit(1)
+
+    else:
+        the_member = Member(*list(the_form[var].value for var in 
+                        ("first", "last", "email", "addr1",
+                            "city", "state", "zipcode", "username")))
+
+        if "addr2" in the_form:
+            the_member.addr2 = the_form["addr2"].value
+
+        print(reg_form.header)
+
+        try:
+            reg_db.insert(the_member)
+
+        except Error as e:
+            print("<strong>Error: {}</strong></br>".format(str(e)))
+
+        reg_db.print_queue()
+        print(reg_form.footer)
