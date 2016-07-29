@@ -4,6 +4,10 @@
 Scrub input for injections.
     looks like html.escape() is the way to do that - at least partially
     needs more thought
+    see:
+        https://www.appsecconsulting.com/blog/cod
+        https://www.kevinlondon.com/2015/07/26/dangerous-python-functions.html
+        https://www.kevinlondon.com/2015/08/15/dangerous-python-functions-pt2.html
 
 Check incoming form data for all necessary fields.
 
