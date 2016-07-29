@@ -78,14 +78,15 @@ class RegDb():
                     regid, first, last, email,
                     addr1, addr2, city, state, zipcode, username
                     FROM {}'''.format(_tablename))
+
         for user in self._cursor:
-            print('''Request Id: {}</br>
+            print('''<p>Request Id: {}</br>
 Name: {} {}</br>
 Current email: {}</br>
-Street Address: {}</br>
-                {}</br>
-City, State, Zip: {}, {} {}</br>
-Preferred User ID: {}</br>
-&nbsp;</br>
-    '''.format(*user[:])
+Street Address: {}</br>'''.format(*user[:5]))
+            if user[5]:
+                print('                {}</br>'.format(user[5]))
+            print('''City, State, Zip: {}, {} {}</br>
+Preferred User ID: {}</p>
+'''.format(*user[:])
             )
