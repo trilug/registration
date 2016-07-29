@@ -5,7 +5,7 @@ import cgitb
 import sqlite3
 import sys
 
-import member import Member
+from member import Member
 import reg_form
 from reg_request_db import RegDb
 
@@ -49,8 +49,13 @@ The registration system is currently unavailable.  Please try back later.
         try:
             reg_db.insert(the_member)
 
-        except Error as e:
-            print("<strong>Error: {}</strong></br>".format(str(e)))
+        except RuntimeError as e:
+            print("<p><strong>Error: {}</strong></p>".format(str(e)))
 
         reg_db.print_queue()
-        print(reg_form.footer)
+
+        print('''
+<p>Thank you for requesting membership in TriLUG!  Be sure to come to a meeting in
+person in order to complete the process.  See you there!</p>
+
+{end}'''.format(end = reg_form.footer))

@@ -11,8 +11,7 @@ class RegDb():
             self._db = sqlite3.connect(dbfile)
 
         except sqlite3.OperationalError as oe:
-            raise ConnectionError("Cannot connect to db at {}".format(dbfile))
-                    from oe
+            raise ConnectionError("Cannot connect to db at {}".format(dbfile)) from oe
 
         else:
             self._cursor = self._db.cursor()
@@ -40,11 +39,11 @@ class RegDb():
 
 
 
-    def insert(new_member):
+    def insert(self, new_member):
 
         try:
-            self._cursor.execute('INSERT INTO {table}
-                        ({fields}) VALUES ({places})'.format(
+            self._cursor.execute('''INSERT INTO {table}
+                        ({fields}) VALUES ({places})'''.format(
                                 table  = _tablename,
                                 fields = ', '.join(new_member.field_names()),
                                 places = ', '.join(list('?' * new_member.field_count()))
@@ -55,11 +54,9 @@ class RegDb():
         except sqlite3.IntegrityError as ie:
             new_exception = "Unable to insert: "
             if 'username' in str(ie):
-                new_exception +=
-                    "username {} was previously requested.".format(username))
+                new_exception += "username {} was previously requested.".format(new_member.username)
             elif 'email' in str(ie):
-                new_exception +=
-                    "email address {} is associated with a previous request.".format(email))
+                new_exception += "email address {} is associated with a previous request.".format(new_member.username)
 
             raise RuntimeError(new_exception)
 
