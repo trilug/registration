@@ -10,22 +10,29 @@ header = '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http
 
 footer = '</body>\n</html>'
 
-full_form = '''{start}
+start_form = '''<form method="POST" action="/cgi-bin/process_registrations">
+<table border=1 cellpadding=2 cellspacing=1 width=80%>
+'''
 
-<form method="POST" action="/cgi-bin/register">
-First Name: <input type="text" name="first">  
-Last Name: <input type="text" name="last"></br>
-Street Address 1: <input type="text" name="addr1"></br>
-Street Address 2 [optional]: <input type="text" name="addr2"></br>
-City: <input type="text" name="city"> 
-State: <input type="text" name="state" size=2> 
-Zip: <input type="text" name ="zipcode" size=5></br>
-Email: <input type="text" name="email"></br>
-Preferred User ID: <input type="text" name="username"></br>
-&nbsp;</br>
-<input type="submit" value="Submit"> <input type="reset" value="Clear">
+end_form   = '''</table>
+<input type="submit" value="Submit">
+<input type="reset" value="Clear">
 </form>
+'''
 
-{end}
-    '''.format(start=header, end=footer)
-
+candidate_template = '''<tr>
+<td>| <input type="checkbox" name="action{reqid}" value="reg"> Register
+    | <input type="checkbox" name="action{reqid}" value="mod"> Modify
+    | <input type="checkbox" name="action{reqid}" value="del"> Delete
+    |</td>
+<td><input type="text" name="first{reqid}" value="{}">
+    <input type="text" name="last{reqid}" value="{}"></td>
+<td><input type="text" name="addr1{reqid}" value="{}"></br>
+    <input type="text" name="addr2{reqid}" value="{}"></td>
+<td><input type="text" name="city{reqid}" value="{}">,
+    <input type="text" name="state{reqid}" value="{}">
+    <input type="text" name="zipcode{reqid}" value="{}"></td>
+<td><input type="text" name="email{reqid}" value="{}"></td>
+<td><input type="text" name="username{reqid}" value="{}"></td>
+</tr>
+'''

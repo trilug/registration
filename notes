@@ -1,4 +1,12 @@
 ==========
+2016/07/31
+
+the form methods take a regdb, use that to get value(s)
+
+the regdb methods can return values, but not format them
+
+
+==========
 2016/07/29
 
 Scrub input for injections.

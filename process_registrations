@@ -16,15 +16,11 @@ the_form = cgi.FieldStorage()
 
 print('Content-type: text/html\n')
 
-if "email" not in the_form:
-    print(process_form.full_form)
+try:
+    reg_db = RegDb(dbfile)
 
-else:
-    try:
-        reg_db = RegDb(dbfile)
-
-    except ConnectionError as ce:
-        print('''{start}
+except ConnectionError as ce:
+    print('''{start}
 
 <h1>Internal Error</h1>
 
@@ -37,21 +33,18 @@ else:
 {end}'''.format(start     = process_form.header,
                 end       = process_form.footer,
                 the_error = ce)
-        )
+    )
 
-    else:
-        # TODO: Rework for processing registrations...
-        print(process_form.header)
+else:
+    print(process_form.header)
 
-        if "addr2" in the_form:
-            reg_db.insert(the_form["first"].value, the_form["last"].value,
-                the_form["email"].value, the_form["addr1"].value, the_form["city"].value,
-                the_form["state"].value, the_form["zipcode"].value, the_form["username"].value,
-                the_form["addr2"].value)
-        else:
-            reg_db.insert(the_form["first"].value, the_form["last"].value,
-                the_form["email"].value, the_form["addr1"].value, the_form["city"].value,
-                the_form["state"].value, the_form["zipcode"].value, the_form["username"].value)
+    print(process_form.start_form)
+    
+    for candidate in reg_db.candidates():
+        print('<!-- ' + ', '.join(str(sv) for sv in candidate.string_values()) + ' -->')
+        print('<!-- ' + ', '.join(str(sv) for sv in candidate.field_names()) + ' -->')
+        print(process_form.candidate_template.format(*candidate.string_values(), reqid=candidate.reqid()))
 
-        reg_db.print_queue()
-        print(process_form.footer)
+    print(process_form.end_form)
+
+    print(process_form.footer)

@@ -1,6 +1,6 @@
 import sqlite3
 
-from member import Member
+import member
 
 _tablename = 'requests'
 
@@ -41,6 +41,8 @@ class RegDb():
 
     def insert(self, new_member):
 
+        # Allowing addr2 to go through with the table default of NULL if
+        # it wasn't set at instantiation.
         try:
             self._cursor.execute('''INSERT INTO {table}
                         ({fields}) VALUES ({places})'''.format(
@@ -66,27 +68,17 @@ class RegDb():
     def delete(self, regid):
         try:
             self._cursor.execute(
-                    '''DELETE FROM {} WHERE regid = ?'''.format(_tablename),
+                    '''DELETE FROM {table} WHERE regid = ?'''.format(table = _tablename),
                     regid
                 )
 
         except:
             raise RuntimeError("Unable to delete request.")
 
-    def print_queue(self):
-        self._cursor.execute('''SELECT
-                    regid, first, last, email,
-                    addr1, addr2, city, state, zipcode, username
-                    FROM {}'''.format(_tablename))
+    def candidates(self):
+        self._cursor.execute('''SELECT {fields} FROM {table}'''.format(fields = ', '.join(member.requested_field_names()), table = _tablename))
 
         for user in self._cursor:
-            print('''<p>Request Id: {}</br>
-Name: {} {}</br>
-Current email: {}</br>
-Street Address: {}</br>'''.format(*user[:5]))
-            if user[5]:
-                print('                {}</br>'.format(user[5]))
-            print('''City, State, Zip: {}, {} {}</br>
-Preferred User ID: {}</p>
-'''.format(*user[:])
-            )
+            new_member = member.Requester(*user[:])
+            yield new_member
+
