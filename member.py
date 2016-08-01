@@ -1,12 +1,12 @@
-_fields = { 'first': 0, 'last': 1, 'addr1': 2, 'addr2': 3, 'city': 4,
-            'state': 5, 'zipcode': 6, 'email': 7, 'username': 8 }
+_fields = {'first': 0, 'last': 1, 'addr1': 2, 'addr2': 3, 'city': 4,
+           'state': 5, 'zipcode': 6, 'email': 7, 'username': 8}
 
 def ordered_field_names():
     return sorted(list(_fields.keys()), key=lambda k: _fields[k])
 
 class Member():
     def __init__(self, first, last, addr1, city, state,
-            zipcode, email, username, addr2=None):
+                 zipcode, email, username, addr2=None):
         self._field = {}
         self._field['first']    = first
         self._field['last']     = last
@@ -65,30 +65,15 @@ class Member():
             return len(_fields) - 1
 
 
-    def as_html(self):
-        the_str = '''Name: {} {}</br>
-Current email: {}</br>
-Street Address: {}</br>
-'''.format(self.first, self.last, self.email, self.addr1)
-        if self.addr2:
-            the_str += '                {}</br>\n'.format(self.addr2)
-        the_str += '''City, State, Zip: {}, {} {}</br>
-Preferred User ID: {}
-'''.format(self.city, self.state, self.zipcode, self.username)
-
-        return the_str
-
-
 class Requester(Member):
     def __init__(self, regid, first, last, email, addr1,
-            city, state, zipcode, username, addr2=None):
-        super(Requester, self).__init__(first, last, email, addr1,
-            city, state, zipcode, username, addr2)
+                 city, state, zipcode, username, addr2=None):
+        super(Requester, self).__init__(first, last, email, addr1, city,
+                                        state, zipcode, username, addr2)
         self.regid = regid
 
     def reqid(self):
         return self.regid
 
 def requested_field_names():
-    return [ "regid" ] + ordered_field_names()
-
+    return ["regid"] + ordered_field_names()
