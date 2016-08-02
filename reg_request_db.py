@@ -76,6 +76,15 @@ class RegDb():
             raise RuntimeError("Unable to delete request.")
 
     def candidates(self):
+        # NOTE: this is the order problem.  *field_names() always includes addr2
+        # embedded in the middle.  works well for process_form where we need it 
+        # there to print correctly, but screws us up here when it needs to be at
+        # the end as an optional arg.
+        # So, we select in (..., addr1, addr2, ...) order, and create Requesters
+        # off of that query.  But a Requester expects addr2 at the *end* of its
+        # ctor arg list, not in the middle.  So the new Requester has a 'city' of
+        # addr2, a 'state' of city, etc.  Which screws everything up downstream.
+        # TODO: Fix dis shit.
         self._cursor.execute('''SELECT {fields} FROM {table}'''.format(fields = ', '.join(member.requested_field_names()), table = _tablename))
 
         for user in self._cursor:

@@ -21,18 +21,22 @@ end_form   = '''</table>
 '''
 
 candidate_template = '''<tr>
-<td>| <input type="checkbox" name="action{reqid}" value="reg"> Register
-    | <input type="checkbox" name="action{reqid}" value="mod"> Modify
-    | <input type="checkbox" name="action{reqid}" value="del"> Delete
-    |</td>
-<td><input type="text" name="first{reqid}" value="{}">
-    <input type="text" name="last{reqid}" value="{}"></td>
-<td><input type="text" name="addr1{reqid}" value="{}"></br>
-    <input type="text" name="addr2{reqid}" value="{}"></td>
-<td><input type="text" name="city{reqid}" value="{}">,
-    <input type="text" name="state{reqid}" value="{}">
-    <input type="text" name="zipcode{reqid}" value="{}"></td>
-<td><input type="text" name="email{reqid}" value="{}"></td>
-<td><input type="text" name="username{reqid}" value="{}"></td>
+<td><nobr><input type="checkbox" name="action{reqid}" value="reg"> Register</nobr></br>
+    <input type="checkbox" name="action{reqid}" value="mod"> Modify</br>
+    <input type="checkbox" name="action{reqid}" value="del"> Delete</br>
+    </td>
+<td><strong>Name:</strong></br>
+    <input type="text" name="first{reqid}" value="{}" size=10>
+    <input type="text" name="last{reqid}" value="{}" size=10></td>
+<td><strong>Address:</strong></br>
+    <input type="text" name="addr1{reqid}" value="{}" size=20></br>
+    <input type="text" name="addr2{reqid}" value="{}" size=20></td>
+<td><strong>Location:</strong></br>
+    <input type="text" name="city{reqid}" value="{}" size=20>,
+    <input type="text" name="state{reqid}" value="{}" size=3>
+    <input type="text" name="zipcode{reqid}" value="{}" size=6></td>
+<td><strong>Email:</strong> <input type="text" name="email{reqid}" value="{}" size=20></td>
+<td><strong>Requested Username:</strong>
+    <input type="text" name="username{reqid}" value="{}" size=15></td>
 </tr>
 '''

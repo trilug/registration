@@ -10,13 +10,13 @@ class Member():
         self._field = {}
         self._field['first']    = first
         self._field['last']     = last
-        self._field['email']    = email
         self._field['addr1']    = addr1
+        self._field['addr2']    = addr2
         self._field['city']     = city
         self._field['state']    = state
         self._field['zipcode']  = zipcode
+        self._field['email']    = email
         self._field['username'] = username
-        self._field['addr2']    = addr2
 
 
     # addr2 is a special snowflake for now - an optional field.
@@ -66,8 +66,8 @@ class Member():
 
 
 class Requester(Member):
-    def __init__(self, regid, first, last, email, addr1,
-                 city, state, zipcode, username, addr2=None):
+    def __init__(self, regid, first, last, addr1, city, state,
+                 zipcode, email, username, addr2=None):
         super(Requester, self).__init__(first, last, email, addr1, city,
                                         state, zipcode, username, addr2)
         self.regid = regid
