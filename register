@@ -4,7 +4,6 @@ import cgi
 import cgitb
 import html
 import sqlite3
-import sys
 
 from member import Member
 import reg_form
@@ -34,8 +33,6 @@ else:
 The registration system is currently unavailable.  Please try back later.
 
 {end}'''.format(start=reg_form.header, end=reg_form.footer))
-
-        sys.exit(1)
 
     else:
         the_member = Member(*list(html.escape(the_form[var].value) for var in 

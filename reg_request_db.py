@@ -56,9 +56,11 @@ class RegDb():
         except sqlite3.IntegrityError as ie:
             new_exception = "Unable to insert: "
             if 'username' in str(ie):
-                new_exception += "username {} was previously requested.".format(new_member.username)
+                new_exception += "username {} was previously requested.".format(
+                    new_member.username)
             elif 'email' in str(ie):
-                new_exception += "email address {} is associated with a previous request.".format(new_member.username)
+                new_exception += "email address {} is associated with a previous request.".format(
+                    new_member.username)
 
             raise RuntimeError(new_exception)
 
@@ -70,11 +72,13 @@ class RegDb():
         try:
             self._cursor.execute(
                     '''DELETE FROM {table} WHERE regid = ?'''.format(table = _tablename),
-                    regid
-                )
+                    regid)
 
         except:
-            raise RuntimeError("Unable to delete request.")
+            raise RuntimeError("Unable to cancel request.")
+
+        else:
+            self._db.commit()
 
 
     def candidates(self):

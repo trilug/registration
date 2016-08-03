@@ -2,6 +2,7 @@
 
 import cgi
 import cgitb
+import html
 import sqlite3
 
 import process_form
@@ -36,13 +37,30 @@ except ConnectionError as ce:
     )
 
 else:
-    print(process_form.header)
+    if "act" not in the_form:
 
-    print(process_form.start_form)
-    
-    for candidate in reg_db.candidates():
-        print(process_form.candidate_template.format(*candidate.string_values('print'), reqid=candidate.reqid()))
+        print(process_form.header)
+        print(process_form.start_form)
+        
+        for candidate in reg_db.candidates():
+            print(process_form.candidate_template.format(
+                *candidate.string_values('print'),
+                reqid=candidate.reqid())
+                )
 
-    print(process_form.end_form)
+        print(process_form.end_form)
+        print(process_form.footer)
 
-    print(process_form.footer)
+    else:
+        deletions = (var for var in the_form if 'del_' in var)
+        canceled  = {}
+        for deletion in deletions:
+            reqid = (deletion.split('_'))[-1]
+            canceled[reqid] = True
+            try:
+                reg_db.delete(reqid)
+            except RuntimeError as rte:
+                print("<strong>Es no bueno: {} (id: {})</strong>".format(rte, reqid))
+            else:
+                print("<strong>Request id {} is gawn.</strong>".format(reqid))
+
