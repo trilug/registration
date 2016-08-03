@@ -1,8 +1,13 @@
-_fields = {'first': 0, 'last': 1, 'addr1': 2, 'addr2': 3, 'city': 4,
-           'state': 5, 'zipcode': 6, 'email': 7, 'username': 8}
+# 'field name': [ ordinal for constructor, ordinal for printing ]
+_fields = {'first': [0, 0], 'last': [1, 1], 'addr1': [2, 2], 'addr2': [8, 3],
+           'city': [3, 4], 'state': [4, 5], 'zipcode': [5, 6],
+           'email': [6, 7], 'username': [7, 8]}
 
-def ordered_field_names():
-    return sorted(list(_fields.keys()), key=lambda k: _fields[k])
+def ordered_field_names(order='init'):
+    if order == 'print':
+        return sorted(list(_fields.keys()), key=lambda k: _fields[k][1])
+    else:
+        return sorted(list(_fields.keys()), key=lambda k: _fields[k][0])
 
 class Member():
     def __init__(self, first, last, addr1, city, state,
@@ -27,9 +32,9 @@ class Member():
         self._field['addr2'] = val
 
 
-    def string_values(self):
+    def string_values(self, order='init'):
         all_values = []
-        for field in ordered_field_names():
+        for field in ordered_field_names(order):
             if field == 'addr2' and not self._field[field]:
                 all_values.append('')
             else:
@@ -38,26 +43,24 @@ class Member():
         return all_values
 
 
-    def values(self):
+    def values(self, order='init'):
         all_values = []
-        for field in ordered_field_names():
+        for field in ordered_field_names(order):
             if field != 'addr2' or self._field[field] != None:
                 all_values.append(self._field[field])
 
         return all_values
 
 
-    def field_names(self):
+    def field_names(self, order='init'):
         all_field_names = []
-        for field in ordered_field_names():
+        for field in ordered_field_names(order):
             if field != 'addr2' or self._field[field] != None:
                 all_field_names.append(field)
 
         return all_field_names
 
 
-    # This can be cleaner if we ever move to using a dict for the fields,
-    # but this will do for the moment.
     def field_count(self):
         if self._field['addr2']:
             return len(_fields)
@@ -68,12 +71,12 @@ class Member():
 class Requester(Member):
     def __init__(self, regid, first, last, addr1, city, state,
                  zipcode, email, username, addr2=None):
-        super(Requester, self).__init__(first, last, email, addr1, city,
-                                        state, zipcode, username, addr2)
+        super(Requester, self).__init__(first, last, addr1, city, state,
+                                        zipcode, email, username, addr2)
         self.regid = regid
 
     def reqid(self):
         return self.regid
 
-def requested_field_names():
-    return ["regid"] + ordered_field_names()
+def requested_field_names(order='init'):
+    return ["regid"] + ordered_field_names(order)

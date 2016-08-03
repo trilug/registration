@@ -9,6 +9,11 @@ class MemberTests(unittest.TestCase):
         nm = member.Member(*user1)
         self.assertEqual(user1, nm.string_values(), "Bad strings.\nExpected: {}\n     Got: {}\n".format(', '.join(user1), ', '.join(nm.string_values())))
 
+    def test_noaddr2_print(self):
+        user1 = ('first', 'last', 'addr1', 'city', 'state', 'zipcode', 'email', 'username')
+        nm = member.Member(*user1)
+        self.assertEqual(user1, nm.string_values('print'), "Bad strings.\nExpected: {}\n     Got: {}\n".format(', '.join(user1), ', '.join(nm.string_values('print'))))
+
 if __name__ == "__main__":
     unittest.main()
 

@@ -51,9 +51,11 @@ The registration system is currently unavailable.  Please try back later.
             reg_db.insert(the_member)
 
         except RuntimeError as e:
-            print("<p><strong>Error: {}</strong></p>".format(str(e)))
+            print('''<p><strong>Error: {err}</strong></p>
+{end}'''.format(err = str(e), end = reg_form.footer))
 
-        print('''
+        else:
+            print('''
 <p>Thank you for requesting membership in TriLUG!  Be sure to come to a meeting in
 person in order to complete the process.  See you there!</p>
 

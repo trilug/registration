@@ -25,16 +25,13 @@ candidate_template = '''<tr>
     <input type="checkbox" name="action{reqid}" value="mod"> Modify</br>
     <input type="checkbox" name="action{reqid}" value="del"> Delete</br>
     </td>
-<td><strong>Name:</strong></br>
-    <input type="text" name="first{reqid}" value="{}" size=10>
-    <input type="text" name="last{reqid}" value="{}" size=10></td>
-<td><strong>Address:</strong></br>
+<td><nobr><input type="text" name="first{reqid}" value="{}" size=10>
+    <input type="text" name="last{reqid}" value="{}" size=10></nobr></br>
     <input type="text" name="addr1{reqid}" value="{}" size=20></br>
-    <input type="text" name="addr2{reqid}" value="{}" size=20></td>
-<td><strong>Location:</strong></br>
-    <input type="text" name="city{reqid}" value="{}" size=20>,
+    <input type="text" name="addr2{reqid}" value="{}" size=20></br>
+    <nobr><input type="text" name="city{reqid}" value="{}" size=20>,
     <input type="text" name="state{reqid}" value="{}" size=3>
-    <input type="text" name="zipcode{reqid}" value="{}" size=6></td>
+    <input type="text" name="zipcode{reqid}" value="{}" size=6></nobr></td>
 <td><strong>Email:</strong> <input type="text" name="email{reqid}" value="{}" size=20></td>
 <td><strong>Requested Username:</strong>
     <input type="text" name="username{reqid}" value="{}" size=15></td>

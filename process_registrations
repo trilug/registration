@@ -41,9 +41,7 @@ else:
     print(process_form.start_form)
     
     for candidate in reg_db.candidates():
-        print('<!-- ' + ', '.join(str(sv) for sv in candidate.string_values()) + ' -->')
-        print('<!-- ' + ', '.join(str(sv) for sv in candidate.field_names()) + ' -->')
-        print(process_form.candidate_template.format(*candidate.string_values(), reqid=candidate.reqid()))
+        print(process_form.candidate_template.format(*candidate.string_values('print'), reqid=candidate.reqid()))
 
     print(process_form.end_form)
 
