@@ -68,21 +68,40 @@ class RegDb():
             self._db.commit()
 
 
+    def modify(self, regid, field, value):
+        try:
+            self._cursor.execute(
+                '''UPDATE {table} SET {field} = "{val}" WHERE regid = ?'''.format(
+                    table = _tablename,
+                    field = field,
+                    val   = value),
+                regid)
+
+        except sqlite3.Error as e:
+            raise RuntimeError("Unable to modify request: " + str(e))
+
+        else:
+            self._db.commit()
+
+
     def delete(self, regid):
         try:
             self._cursor.execute(
-                    '''DELETE FROM {table} WHERE regid = ?'''.format(table = _tablename),
+                    '''DELETE FROM {table} WHERE regid = ?'''.format(
+                        table = _tablename),
                     regid)
 
-        except:
-            raise RuntimeError("Unable to cancel request.")
+        except sqlite3.Error as e:
+            raise RuntimeError("Unable to cancel request: " + str(e))
 
         else:
             self._db.commit()
 
 
     def candidates(self):
-        self._cursor.execute('''SELECT {fields} FROM {table}'''.format(fields = ', '.join(member.requested_field_names()), table = _tablename))
+        self._cursor.execute('''SELECT {fields} FROM {table}'''.format(
+            fields = ', '.join(member.requested_field_names()),
+            table = _tablename))
 
         for user in self._cursor:
             new_member = member.Requester(*user[:])

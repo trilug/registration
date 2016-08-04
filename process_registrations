@@ -3,8 +3,10 @@
 import cgi
 import cgitb
 import html
+import re
 import sqlite3
 
+import member
 import process_form
 from reg_request_db import RegDb
 
@@ -60,7 +62,25 @@ else:
             try:
                 reg_db.delete(reqid)
             except RuntimeError as rte:
-                print("<strong>Es no bueno: {} (id: {})</strong>".format(rte, reqid))
+                print("<strong>No can delete: {} (id: {})</strong></br>".format(rte, reqid))
             else:
-                print("<strong>Request id {} is gawn.</strong>".format(reqid))
+                print("<strong>Request id {} is gawn.</strong></br>".format(reqid))
 
+        modifications = (var for var in the_form if 'mod_' in var)
+        for mod in modifications:
+            reqid = (mod.split('_'))[-1]
+            if not re.search(r'\D', reqid) and reqid not in canceled:
+                fields = member.ordered_field_names()
+                for field in fields:
+                    val = the_form[field+'_'+reqid].value
+                    try:
+                        reg_db.modify(reqid, field, val)
+                    except RuntimeError as rte:
+                        print("<strong>No can modify: {} (id: {})</strong></br>".format(rte, reqid))
+                    else:
+                        print("<strong>Modified id {}, field {}. Now: {}</strong></br>".format(
+                            reqid, field, val))
+            else:
+                print("<strong>Cannot modify request id {}: malformed or deleted.</strong></br>".format(reqid))
+
+        # registrations = ...
