@@ -2,12 +2,12 @@
 
 import cgi
 import cgitb
-import html
 import re
 import sqlite3
 
 import member
 import process_form
+import reg_scrub
 from reg_request_db import RegDb
 
 debugdir = '/tmp'
@@ -54,7 +54,13 @@ else:
         print(process_form.footer)
 
     else:
-        deletions = (var for var in the_form if 'del_' in var)
+        cleaned_form = reg_scrub.sanitize(the_form)
+        #print("<strong>{}</strong></br>".format(cleaned_form))
+
+        deletions     = list(var for var in cleaned_form if 'del_' in var)
+        modifications = list(var for var in cleaned_form if 'mod_' in var)
+        registrations = list(var for var in cleaned_form if 'reg_' in var)
+        
         canceled  = {}
         for deletion in deletions:
             reqid = (deletion.split('_'))[-1]
@@ -66,21 +72,20 @@ else:
             else:
                 print("<strong>Request id {} is gawn.</strong></br>".format(reqid))
 
-        modifications = (var for var in the_form if 'mod_' in var)
         for mod in modifications:
             reqid = (mod.split('_'))[-1]
             if not re.search(r'\D', reqid) and reqid not in canceled:
                 fields = member.ordered_field_names()
                 for field in fields:
-                    val = the_form[field+'_'+reqid].value
+                    val = cleaned_form[field+'_'+reqid]
                     try:
                         reg_db.modify(reqid, field, val)
                     except RuntimeError as rte:
-                        print("<strong>No can modify: {} (id: {})</strong></br>".format(rte, reqid))
+                        print("<strong>Unable to modify: {} (id: {})</strong></br>".format(rte, reqid))
                     else:
                         print("<strong>Modified id {}, field {}. Now: {}</strong></br>".format(
                             reqid, field, val))
             else:
-                print("<strong>Cannot modify request id {}: malformed or deleted.</strong></br>".format(reqid))
+                print("<strong>Unable to modify request id {}: malformed or deleted.</strong></br>".format(reqid))
 
         # registrations = ...

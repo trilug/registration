@@ -1,5 +1,5 @@
 EXES    = register process_registrations
-LIBS    = reg_form.py reg_request_db.py member.py process_form.py
+LIBS    = reg_form.py reg_request_db.py reg_scrub.py member.py process_form.py
 SRCS    = $(EXES) $(LIBS)
 
 DSTDIR  = /usr/lib/cgi-bin/
