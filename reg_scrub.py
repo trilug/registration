@@ -5,6 +5,8 @@ import re
 _allowed_fields = member.ordered_field_names()
 _allowed_fields.extend(('del', 'mod', 'reg'))
 
+_bad_requests = []
+
 def sanitize(web_form):
     '''Take a cgi.FieldStorage object and scrub it down to sane values.
     returns a dict with the cgi vars as keys and their html.escape()ed
@@ -25,8 +27,8 @@ def name_ok(name):
     must consist of only digits.'''
     varparts = name.split('_')
     if len(varparts) == 2:
-        if varparts[0] in _allowed_fields:
-            if not re.search(r'\D', varparts[1]):
+        if not re.search(r'\D', varparts[1]):
+            if varparts[0] in _allowed_fields:
                 return True
     return False
 

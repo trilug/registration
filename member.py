@@ -3,6 +3,7 @@ _fields = {'first': [0, 0], 'last': [1, 1], 'addr1': [2, 2], 'addr2': [8, 3],
            'city': [3, 4], 'state': [4, 5], 'zipcode': [5, 6],
            'email': [6, 7], 'username': [7, 8]}
 
+# Make a class method
 def ordered_field_names(order='init'):
     if order == 'print':
         return sorted(list(_fields.keys()), key=lambda k: _fields[k][1])
@@ -78,5 +79,6 @@ class Requester(Member):
     def reqid(self):
         return self.regid
 
+# Make a class method (Requester)
 def requested_field_names(order='init'):
     return ["regid"] + ordered_field_names(order)
