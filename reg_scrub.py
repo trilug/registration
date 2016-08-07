@@ -1,8 +1,8 @@
 import html
-import member
 import re
+from member import Member
 
-_allowed_fields = member.ordered_field_names()
+_allowed_fields = Member.ordered_field_names()
 _allowed_fields.extend(('del', 'mod', 'reg'))
 
 _bad_requests = []

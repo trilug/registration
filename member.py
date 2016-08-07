@@ -1,18 +1,29 @@
-# 'field name': [ ordinal for constructor, ordinal for printing ]
-_fields = {'first': [0, 0], 'last': [1, 1], 'addr1': [2, 2], 'addr2': [8, 3],
-           'city': [3, 4], 'state': [4, 5], 'zipcode': [5, 6],
-           'email': [6, 7], 'username': [7, 8]}
-
-# Make a class method
-def ordered_field_names(order='init'):
-    if order == 'print':
-        return sorted(list(_fields.keys()), key=lambda k: _fields[k][1])
-    else:
-        return sorted(list(_fields.keys()), key=lambda k: _fields[k][0])
-
 class Member():
+    '''The basic class that holds a prospective member and all of his or her
+    registration info.'''
+
+    # The elements of this dict are:
+    #     'field name': [ ordinal for constructor, ordinal for printing ]
+    _fields = {'first': [0, 0], 'last':     [1, 1], 'addr1':   [2, 2], 'addr2': [8, 3],
+               'city':  [3, 4], 'state':    [4, 5], 'zipcode': [5, 6],
+               'email': [6, 7], 'username': [7, 8]}
+
+    @classmethod
+    def ordered_field_names(cls, order='init'):
+        '''What it says on the tin.  Return the names of the fields in the Member
+        class, in the specified order.  The 'init' order is appropriate for creating
+        a Member instance, or inserting into a database (the addr2 field appears at
+        the end of the list, since it's optional).  The 'print' order places addr2
+        directly after addr1 so that it can be used in a print format, for instance.'''
+        fields = cls._fields
+        if order == 'print':
+            return sorted(fields.keys(), key=lambda k: fields[k][1])
+        else:
+            return sorted(fields.keys(), key=lambda k: fields[k][0])
+
     def __init__(self, first, last, addr1, city, state,
                  zipcode, email, username, addr2=None):
+        '''Nothing to do other than populate the data members.'''
         self._field = {}
         self._field['first']    = first
         self._field['last']     = last
@@ -25,17 +36,22 @@ class Member():
         self._field['username'] = username
 
 
-    # addr2 is a special snowflake for now - an optional field.
-    # I'm not pleased with having a specific setter like this,
-    # but it's a half step better than the caller directly setting
-    # the value.  Blech.
     def set_addr2(self, val):
+        '''The addr2 field is a special snowflake for now - optional, in other
+        words.  I'm not pleased with having a specific setter like this, but
+        it's a half step better than the caller directly setting the value.
+        Blech.'''
         self._field['addr2'] = val
 
 
     def string_values(self, order='init'):
+        '''Return the values in the Member.  This is intended for usage in
+        printing.  So if addr2 isn't defined for this Member, an empty
+        string is returned in its place.  In other words, this will always
+        return a number of items equal to the maximum number possible for
+        a Member.'''
         all_values = []
-        for field in ordered_field_names(order):
+        for field in Member.ordered_field_names(order):
             if field == 'addr2' and not self._field[field]:
                 all_values.append('')
             else:
@@ -45,8 +61,12 @@ class Member():
 
 
     def values(self, order='init'):
+        '''Return the values in the Member.  This is intended for usage in
+        database insertions and such.  So if addr2 isn't defined for this
+        Member, it simply isn't returned (the db should have a default set
+        for the column).'''
         all_values = []
-        for field in ordered_field_names(order):
+        for field in Member.ordered_field_names(order):
             if field != 'addr2' or self._field[field] != None:
                 all_values.append(self._field[field])
 
@@ -54,8 +74,11 @@ class Member():
 
 
     def field_names(self, order='init'):
+        '''Return the names of the fields in this Member.  Intended for use
+        in database insertions.  If addr2 isn't present, it is not listed
+        among the fields for the Member.'''
         all_field_names = []
-        for field in ordered_field_names(order):
+        for field in Member.ordered_field_names(order):
             if field != 'addr2' or self._field[field] != None:
                 all_field_names.append(field)
 
@@ -63,6 +86,9 @@ class Member():
 
 
     def field_count(self):
+        '''Return the count of fields for this Member.  The only thing that
+        will change this from being the same number as "all the fields" is if
+        addr2 isn't set.'''
         if self._field['addr2']:
             return len(_fields)
         else:
@@ -70,15 +96,22 @@ class Member():
 
 
 class Requester(Member):
-    def __init__(self, regid, first, last, addr1, city, state,
+    '''A Member after they have been assigned a request id, generally
+    one who's been fetched from the database.'''
+
+    @classmethod
+    def active_request_field_names(order='init'):
+        '''Same as Member.ordered_field_names, but with the addition of the
+        request id at the beginning of the field list.'''
+        return ["reqid"] + Member.ordered_field_names(order)
+
+    def __init__(self, reqid, first, last, addr1, city, state,
                  zipcode, email, username, addr2=None):
+        '''Just instantiate a Member and add the request id.'''
         super(Requester, self).__init__(first, last, addr1, city, state,
                                         zipcode, email, username, addr2)
-        self.regid = regid
+        self.reqid = reqid
 
-    def reqid(self):
-        return self.regid
-
-# Make a class method (Requester)
-def requested_field_names(order='init'):
-    return ["regid"] + ordered_field_names(order)
+    def get_reqid(self):
+        '''Simple getter to return the request id of the Requester.'''
+        return self.reqid

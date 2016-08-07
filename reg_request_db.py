@@ -1,6 +1,6 @@
 import sqlite3
 
-import member
+from member import Requester
 
 _tablename = 'requests'
 
@@ -20,7 +20,7 @@ class RegDb():
         '''Try to create the db if it doesn't already exist.'''
         try:
             self._cursor.execute('''CREATE TABLE {} (
-                                regid INTEGER PRIMARY KEY,
+                                reqid INTEGER PRIMARY KEY,
                                 first TEXT,
                                 last TEXT,
                                 email TEXT unique,
@@ -68,14 +68,14 @@ class RegDb():
             self._db.commit()
 
 
-    def modify(self, regid, field, value):
+    def modify(self, reqid, field, value):
         try:
             self._cursor.execute(
-                '''UPDATE {table} SET {field} = "{val}" WHERE regid = ?'''.format(
+                '''UPDATE {table} SET {field} = "{val}" WHERE reqid = ?'''.format(
                     table = _tablename,
                     field = field,
                     val   = value),
-                regid)
+                reqid)
 
         except sqlite3.Error as e:
             raise RuntimeError("Unable to modify request: " + str(e))
@@ -84,12 +84,12 @@ class RegDb():
             self._db.commit()
 
 
-    def delete(self, regid):
+    def delete(self, reqid):
         try:
             self._cursor.execute(
-                    '''DELETE FROM {table} WHERE regid = ?'''.format(
+                    '''DELETE FROM {table} WHERE reqid = ?'''.format(
                         table = _tablename),
-                    regid)
+                    reqid)
 
         except sqlite3.Error as e:
             raise RuntimeError("Unable to cancel request: " + str(e))
@@ -100,10 +100,10 @@ class RegDb():
 
     def candidates(self):
         self._cursor.execute('''SELECT {fields} FROM {table}'''.format(
-            fields = ', '.join(member.requested_field_names()),
+            fields = ', '.join(Requester.active_request_field_names()),
             table = _tablename))
 
         for user in self._cursor:
-            new_member = member.Requester(*user[:])
+            new_member = Requester(*user[:])
             yield new_member
 

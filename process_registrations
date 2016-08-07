@@ -5,10 +5,10 @@ import cgitb
 import re
 import sqlite3
 
-import member
 import process_form
 import reg_scrub
 from reg_request_db import RegDb
+from member         import Member
 
 debugdir = '/tmp'
 datadir  = '/var/spool/registration'
@@ -42,15 +42,19 @@ else:
     if "act" not in the_form:
 
         print(process_form.header)
-        print(process_form.start_form)
         
+        candidates = []
         for candidate in reg_db.candidates():
-            print(process_form.candidate_template.format(
+            candidates.append(process_form.candidate_template.format(
                 *candidate.string_values('print'),
-                reqid=candidate.reqid())
-                )
+                reqid=candidate.get_reqid()))
+        if candidates:
+            print(process_form.start_form)
+            print('\n'.join(candidates))
+            print(process_form.end_form)
+        else:
+            print('<strong>No pending registration requests.</strong>')
 
-        print(process_form.end_form)
         print(process_form.footer)
 
     else:
@@ -75,7 +79,7 @@ else:
         for mod in modifications:
             reqid = (mod.split('_'))[-1]
             if not re.search(r'\D', reqid) and reqid not in canceled:
-                fields = member.ordered_field_names()
+                fields = Member.ordered_field_names()
                 for field in fields:
                     val = cleaned_form[field+'_'+reqid]
                     try:
