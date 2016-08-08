@@ -36,8 +36,7 @@ The registration system is currently unavailable.  Please try back later.
 
     else:
         the_member = Member(*list(html.escape(the_form[var].value) for var in 
-                        ("first", "last", "addr1", "city",
-                         "state", "zipcode", "email", "username")))
+                        Member.ordered_field_names()))
 
         if "addr2" in the_form:
             the_member["addr2"] = the_form["addr2"].value

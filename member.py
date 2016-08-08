@@ -42,7 +42,7 @@ class Member():
 
     def __setitem__(self, key, val):
         '''Set the value of one of the fields.'''
-        if key in _fields:
+        if key in self._fields:
             self._field[key] = val
 
     def string_values(self, order='init'):
@@ -91,9 +91,9 @@ class Member():
         will change this from being the same number as "all the fields" is if
         addr2 isn't set.'''
         if self._field['addr2']:
-            return len(_fields)
+            return len(self._fields)
         else:
-            return len(_fields) - 1
+            return len(self._fields) - 1
 
 
     def shell_names(self):

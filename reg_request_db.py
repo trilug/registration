@@ -99,19 +99,28 @@ class RegDb():
 
 
     def candidates(self):
-        self._cursor.execute('''SELECT {fields} FROM {table}'''.format(
-            fields = ', '.join(Requester.active_request_field_names()),
-            table = _tablename))
+        try:
+            self._cursor.execute('''SELECT {fields} FROM {table}'''.format(
+                fields = ', '.join(Requester.active_request_field_names()),
+                table = _tablename))
 
-        for user in self._cursor:
-            new_member = Requester(*user[:])
-            yield new_member
+        except sqlite3.Error as e:
+            raise RuntimeError("Unable to fetch requests: " + str(e))
+
+        else:
+            for user in self._cursor:
+                new_member = Requester(*user[:])
+                yield new_member
 
     def candidate(self, reqid):
-        self._cursor.execute(
-                '''SELECT {fields} FROM {table} WHERE reqid = ?'''.format(
-                    fields = ', '.join(Requester.active_request_field_names()),
-                    table = _tablename),
-                reqid)
-
-        return Requester(*self._cursor.fetchone())
+        try:
+            self._cursor.execute(
+                    '''SELECT {fields} FROM {table} WHERE reqid = ?'''.format(
+                        fields = ', '.join(Requester.active_request_field_names()),
+                        table = _tablename),
+                    reqid)
+        except sqlite3.Error as e:
+            raise RuntimeError("Unable to fetch request id {}: {}".format(
+                reqid, str(e)))
+        else:
+            return Requester(*self._cursor.fetchone())

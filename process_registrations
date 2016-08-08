@@ -72,10 +72,10 @@ else:
                 try:
                     reg_db.delete(reqid)
                 except RuntimeError as rte:
-                    print("<strong>No can delete: {} (id: {})</strong></br>".format(
-                        rte, reqid))
+                    print("<strong>Unable to cancel request {}: {}</strong></br>".format(
+                        reqid, rte))
                 else:
-                    print("<strong>Request id {} is gawn.</strong></br>".format(reqid))
+                    print("<strong>Request {} canceled.</strong></br>".format(reqid))
 
             for mod in modifications:
                 reqid = (mod.split('_'))[-1]
@@ -107,7 +107,8 @@ else:
                     try:
                         register.add_to_member_db(new_member)
                     except RuntimeError as rte:
-                        print("<strong>Unable to add member in request id {} to database.</strong></br>".format(reqid))
+                        print("<strong>Unable to add member in request id {} to database: {}</strong></br>".format(
+                            reqid, str(rte)))
                     else:
                         try:
                             register.queue_for_shell(new_member)

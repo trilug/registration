@@ -17,17 +17,21 @@ _member_to_add = {
     }
 
 
-_datadir  = '/var/spool/registration'
-_queue    = '{}/new_shell_accts'.format(_datadir)
-_dbfile   = '{}/account_queue.db'.format(_datadir)
+_datadir = '/var/spool/registration'
+_queue   = '{}/new_shell_accts'.format(_datadir)
+_dbfile  = '{}/account_queue.db'.format(_datadir)
 database = _dbfile
 
 
 def add_to_member_db(new_member):
+    '''This currently backposts to the existing member tool on the
+    steering site.  It will eventually directly interface with the
+    database, but this is the quickest way to get us up for now.'''
     _url = 'https://steering.trilug.org/member_tool/?cmd=add'
     _vals = urllib.parse.urlencode(
             list((_member_to_add[v], new_member[v])
-            for v in new_member.shell_names())).encode('ascii')
+            for v in new_member.field_names() if v in _member_to_add)
+            ).encode('ascii')
     _headers = {
             "Content-Type": "application/x-www-form-urlencoded"
             }
@@ -43,6 +47,8 @@ def add_to_member_db(new_member):
 
 
 def queue_for_shell(new_member):
+    '''Add info to the list of shell accounts to add.'''
     with open(_queue, 'a') as queue:
-        queue.write('\t'.join(*new_member.shell_values()))
+        queue.write('\t'.join(new_member.shell_values())+'\n')
+        print('wrote to {}'.format(_queue))
 
