@@ -2,25 +2,23 @@
 
 import cgi
 import cgitb
-import re
-import sqlite3
 
 import process_form
 import reg_scrub
+import register
+
 from reg_request_db import RegDb
 from member         import Member
 
 debugdir = '/tmp'
-datadir  = '/var/spool/registration'
-dbfile   = '{}/account_queue.db'.format(datadir)
-
 cgitb.enable(display=0, logdir=debugdir)
+
 the_form = cgi.FieldStorage()
 
 print('Content-type: text/html\n')
 
 try:
-    reg_db = RegDb(dbfile)
+    reg_db = RegDb(register.database)
 
 except ConnectionError as ce:
     print('''{start}
@@ -58,38 +56,61 @@ else:
         print(process_form.footer)
 
     else:
-        cleaned_form = reg_scrub.sanitize(the_form)
-        #print("<strong>{}</strong></br>".format(cleaned_form))
+        cleaned_form = reg_scrub.cleanse_and_validate(the_form)
 
         deletions     = list(var for var in cleaned_form if 'del_' in var)
         modifications = list(var for var in cleaned_form if 'mod_' in var)
         registrations = list(var for var in cleaned_form if 'reg_' in var)
-        
-        canceled  = {}
-        for deletion in deletions:
-            reqid = (deletion.split('_'))[-1]
-            canceled[reqid] = True
-            try:
-                reg_db.delete(reqid)
-            except RuntimeError as rte:
-                print("<strong>No can delete: {} (id: {})</strong></br>".format(rte, reqid))
-            else:
-                print("<strong>Request id {} is gawn.</strong></br>".format(reqid))
 
-        for mod in modifications:
-            reqid = (mod.split('_'))[-1]
-            if not re.search(r'\D', reqid) and reqid not in canceled:
+        if not (deletions or modifications or registrations):
+            print("<strong>No action specified, or input malformed.</strong></br>")
+
+        else:
+        
+            for deletion in deletions:
+                reqid = (deletion.split('_'))[-1]
+                try:
+                    reg_db.delete(reqid)
+                except RuntimeError as rte:
+                    print("<strong>No can delete: {} (id: {})</strong></br>".format(
+                        rte, reqid))
+                else:
+                    print("<strong>Request id {} is gawn.</strong></br>".format(reqid))
+
+            for mod in modifications:
+                reqid = (mod.split('_'))[-1]
                 fields = Member.ordered_field_names()
                 for field in fields:
-                    val = cleaned_form[field+'_'+reqid]
                     try:
-                        reg_db.modify(reqid, field, val)
-                    except RuntimeError as rte:
-                        print("<strong>Unable to modify: {} (id: {})</strong></br>".format(rte, reqid))
+                        val = cleaned_form[field+'_'+reqid]
+                    except KeyError:
+                        if field != 'addr2':
+                            print("<strong>Invalid field: {}</strong></br>".format(field))
                     else:
-                        print("<strong>Modified id {}, field {}. Now: {}</strong></br>".format(
-                            reqid, field, val))
-            else:
-                print("<strong>Unable to modify request id {}: malformed or deleted.</strong></br>".format(reqid))
+                        try:
+                            reg_db.modify(reqid, field, val)
+                        except RuntimeError as rte:
+                            print("<strong>Unable to modify: {} (id: {})</strong></br>".format(
+                                rte, reqid))
+                        else:
+                            print("<strong>Modified id {}, field {}. Now: {}</strong></br>".format(
+                                reqid, field, val))
 
-        # registrations = ...
+            for reg in registrations:
+                reqid = (reg.split('_'))[-1]
+                try:
+                    new_member = reg_db.candidate(reqid)
+                except RuntimeError as rte:
+                    print("<strong>Unable to fetch request {}: {}</strong></br>".format(
+                        reqid, str(rte)))
+                else:
+                    try:
+                        register.add_to_member_db(new_member)
+                    except RuntimeError as rte:
+                        print("<strong>Unable to add member in request id {} to database.</strong></br>".format(reqid))
+                    else:
+                        try:
+                            register.queue_for_shell(new_member)
+                        except RuntimeError as rte:
+                            print("<strong>Unable to add member in request id {} to shell queue.</strong></br>".format(reqid))
+

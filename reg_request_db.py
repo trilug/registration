@@ -107,3 +107,11 @@ class RegDb():
             new_member = Requester(*user[:])
             yield new_member
 
+    def candidate(self, reqid):
+        self._cursor.execute(
+                '''SELECT {fields} FROM {table} WHERE reqid = ?'''.format(
+                    fields = ', '.join(Requester.active_request_field_names()),
+                    table = _tablename),
+                reqid)
+
+        return Requester(*self._cursor.fetchone())

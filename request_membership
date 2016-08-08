@@ -40,7 +40,7 @@ The registration system is currently unavailable.  Please try back later.
                          "state", "zipcode", "email", "username")))
 
         if "addr2" in the_form:
-            the_member.set_addr2(the_form["addr2"].value)
+            the_member["addr2"] = the_form["addr2"].value
 
         print(reg_form.header)
 

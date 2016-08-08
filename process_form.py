@@ -21,7 +21,8 @@ end_form   = '''</table>
 '''
 
 candidate_template = '''<tr>
-<td><nobr><input type="checkbox" name="reg_{reqid}" value="1"> Register</nobr></br>
+<td><strong>Request {reqid}</strong></br>
+    <nobr><input type="checkbox" name="reg_{reqid}" value="1"> Register</nobr></br>
     <input type="checkbox" name="mod_{reqid}" value="1"> Modify</br>
     <input type="checkbox" name="del_{reqid}" value="1"> Cancel Request</br>
     </td>

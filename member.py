@@ -36,13 +36,14 @@ class Member():
         self._field['username'] = username
 
 
-    def set_addr2(self, val):
-        '''The addr2 field is a special snowflake for now - optional, in other
-        words.  I'm not pleased with having a specific setter like this, but
-        it's a half step better than the caller directly setting the value.
-        Blech.'''
-        self._field['addr2'] = val
+    def __getitem__(self, key):
+        '''Retrieve the values of one of the fields.'''
+        return self._field[key]
 
+    def __setitem__(self, key, val):
+        '''Set the value of one of the fields.'''
+        if key in _fields:
+            self._field[key] = val
 
     def string_values(self, order='init'):
         '''Return the values in the Member.  This is intended for usage in
@@ -93,6 +94,16 @@ class Member():
             return len(_fields)
         else:
             return len(_fields) - 1
+
+
+    def shell_names(self):
+        '''Return the fields necessary to create a shell account.'''
+        return ('username', 'first', 'last', 'email')
+
+
+    def shell_values(self):
+        '''Return the fields necessary to create a shell account.'''
+        return list(self._field[f] for f in self.shell_names())
 
 
 class Requester(Member):

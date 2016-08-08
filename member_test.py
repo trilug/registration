@@ -27,7 +27,6 @@ if __name__ == "__main__":
 
 #    def ordered_field_names(cls, order='init'):
 #    def __init__(self, first, last, addr1, city, state,
-#    def set_addr2(self, val):
 #    def string_values(self, order='init'):
 #    def values(self, order='init'):
 #    def field_names(self, order='init'):

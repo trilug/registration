@@ -12,7 +12,7 @@ footer = '</body>\n</html>'
 
 full_form = '''{start}
 
-<form method="POST" action="/cgi-bin/register">
+<form method="POST" action="/cgi-bin/request_membership">
 First Name: <input type="text" name="first">  
 Last Name: <input type="text" name="last"></br>
 Street Address 1: <input type="text" name="addr1"></br>
