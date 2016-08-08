@@ -7,8 +7,8 @@ import process_form
 import reg_scrub
 import register
 
-from reg_request_db import RegDb
 from member         import Member
+from reg_request_db import RegDb
 
 debugdir = '/tmp'
 cgitb.enable(display=0, logdir=debugdir)

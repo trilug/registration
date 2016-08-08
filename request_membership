@@ -3,17 +3,16 @@
 import cgi
 import cgitb
 import html
-import sqlite3
+
+import reg_form
+import register
 
 from member import Member
-import reg_form
 from reg_request_db import RegDb
 
 debugdir = '/tmp'
-datadir  = '/var/spool/registration'
-dbfile   = '{}/account_queue.db'.format(datadir)
-
 cgitb.enable(display=0, logdir=debugdir)
+
 the_form = cgi.FieldStorage()
 
 print('Content-type: text/html\n')
@@ -23,7 +22,7 @@ if "email" not in the_form:
 
 else:
     try:
-        reg_db = RegDb(dbfile)
+        reg_db = RegDb(register.database)
 
     except:
         print('''{start}
