@@ -7,8 +7,6 @@ _actions = ('del', 'mod', 'reg')
 _allowed_fields = Member.ordered_field_names()
 _allowed_fields.extend(_actions)
 
-_bad_requests = []
-
 def cleanse_and_validate(web_form):
     cleansed_form = sanitize(web_form)
     for reqid in list(cleansed_form.keys()):
