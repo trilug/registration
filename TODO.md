@@ -16,3 +16,6 @@
 
 * Integrate with main sites
 * Integrate some JS form checking
+    * http://www.javascript-coder.com/html-form/javascript-form-validation.phtml
+
+

@@ -5,6 +5,7 @@ import cgitb
 import html
 
 import reg_form
+import reg_scrub
 import register
 
 from member import Member
@@ -34,21 +35,27 @@ The registration system is currently unavailable.  Please try back later.
 {end}'''.format(start=reg_form.header, end=reg_form.footer))
 
     else:
-        the_member = Member(*list(html.escape(the_form[var].value) for var in 
-                        Member.ordered_field_names() if var in the_form))
-
         print(reg_form.header)
-
         try:
-            reg_db.insert(the_member)
+            the_member = Member(*list(html.escape(the_form[var].value) for var in 
+                            Member.ordered_field_names()
+                            if var in the_form
+                            and reg_scrub.val_ok(the_form[var].value)))
 
-        except RuntimeError as e:
-            print('''<p><strong>Error: {err}</strong></p>
-{end}'''.format(err = str(e), end = reg_form.footer))
+        except TypeError:
+            print('<p><strong>Error:  Required field(s) not filled out.</strong></p>')
 
         else:
-            print('''
+            try:
+                reg_db.insert(the_member)
+
+            except RuntimeError as e:
+                print('<p><strong>Error: {err}</strong></p>'.format(err = str(e)))
+
+            else:
+                print('''
 <p>Thank you for requesting membership in TriLUG!  Be sure to come to a meeting in
 person in order to complete the process.  See you there!</p>
+''')
 
-{end}'''.format(end = reg_form.footer))
+        print(reg_form.footer)
