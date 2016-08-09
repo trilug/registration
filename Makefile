@@ -29,5 +29,5 @@ $(DSTS): $(SRCS)
 	sudo chmod 755 $(addprefix $(STEERING_DIR), $(STEERING_EXES))
 	sudo chmod 644 $(addprefix $(STEERING_DIR), $(STEERING_LIBS))
 ifneq ($(STEERING_DIR), $(MAIN_DIR))
-	sudo ln -s $(MAIN_DSTS) $(STEERING_DIR)
+	sudo ln -s -f $(addprefix $(MAIN_DIR), $(MAIN_LIBS)) $(STEERING_DIR)
 endif

@@ -28,10 +28,13 @@ def add_to_member_db(new_member):
     steering site.  It will eventually directly interface with the
     database, but this is the quickest way to get us up for now.'''
     _url = 'https://steering.trilug.org/member_tool/?cmd=add'
-    _vals = urllib.parse.urlencode(
-            list((_member_to_add[v], new_member[v])
+
+    _varlist = list(
+            (_member_to_add[v], new_member[v])
             for v in new_member.field_names() if v in _member_to_add)
-            ).encode('ascii')
+    _varlist.append(('submit', 'Submit'))
+    _request_vars = urllib.parse.urlencode(_varlist).encode('ascii')
+
     _headers = {
             "Content-Type": "application/x-www-form-urlencoded"
             }
@@ -42,7 +45,7 @@ def add_to_member_db(new_member):
         raise RuntimeError('Unauthorized')
     else:
         _headers['Authorization'] = auth_header
-        req = urllib.request.Request(_url, _vals, _headers)
+        req = urllib.request.Request(_url, _request_vars, _headers)
         results = urllib.request.urlopen(req)
 
 
