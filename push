@@ -1,5 +1,0 @@
-#!/bin/bash
-
-FILES=(Makefile reg_form.py reg_request_db.py register)
-
-scp ${FILES[@]} trilug:~/devel/regform
