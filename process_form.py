@@ -9,19 +9,50 @@ header = '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http
 '''
 
 footer = '''
-<div align="center">Reload the <a href="/cgi-bin/{}">form</a></div>
+<div align="center">
+<hr width="50%">
+Reload the <a href="/cgi-bin/{}">form</a>
+<strong>|</strong>
+Go to the <a href="/member_tool/">Member Tool</a>
+<strong>|</strong>
+Back to <a href="/">Steering</a>
+</div>
 
 </body>
 </html>
 '''
 
 start_form = '''<form method="POST" action="/cgi-bin/process_registrations">
+<div align="center">
+<table border="0" width="60%"><tr><td>
+<p>Here is the list of people who have requested to join TriLUG.  The bylaws state that in order to
+qualify for membership, one must attend a meeting in person.  Since this process is now being done
+online, you should only register those who actually show up, rather than accepting all pending
+requests.</p>
+
+<p>Once you have registered one or more prospective members below, they will be in the member
+database, but <strong>will not</strong> have a shell account.  In order to complete that process,
+log on to pilot, and run:
+    <pre>
+    bash$ /usr/local/bin/new-accounts-from-file /var/spool/registration/new_shell_accts
+    bash$ sudo rm /var/spool/registration/new_shell_accts
+    </pre>
+Once that is done, they're all set up.</p>
+</td></tr></table>
+</div>
+
+<div align="center">
 <table border=1 cellpadding=2 cellspacing=1 width=80%>
 '''
 
 end_form = '''</table>
-<input type="submit" name="act" value="Submit">
-<input type="reset" value="Reset Form">
+</br>
+<table border="0" width="40%"><tr>
+<td align="center"><input type="submit" name="act" value="Submit"></td>
+<td align="center"><input type="reset" value="Reset Form"></td>
+</tr></table>
+</br>
+</div>
 </form>
 '''
 
