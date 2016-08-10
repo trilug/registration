@@ -8,13 +8,18 @@ header = '''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http
 <body>
 '''
 
-footer = '</body>\n</html>'
+footer = '''
+<div align="center">Reload the <a href="/cgi-bin/{}">form</a></div>
+
+</body>
+</html>
+'''
 
 start_form = '''<form method="POST" action="/cgi-bin/process_registrations">
 <table border=1 cellpadding=2 cellspacing=1 width=80%>
 '''
 
-end_form   = '''</table>
+end_form = '''</table>
 <input type="submit" name="act" value="Submit">
 <input type="reset" value="Reset Form">
 </form>

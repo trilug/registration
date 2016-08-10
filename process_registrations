@@ -2,6 +2,7 @@
 
 import cgi
 import cgitb
+import os.path
 
 import process_form
 import reg_scrub
@@ -15,32 +16,26 @@ cgitb.enable(display=0, logdir=debugdir)
 
 the_form = cgi.FieldStorage()
 
-print('Content-type: text/html\n')
+print('''Content-type: text/html
+
+{}'''.format(process_form.header))
 
 try:
     reg_db = RegDb(register.database)
 
-except ConnectionError as ce:
-    print('''{start}
-
-<h1>Internal Error</h1>
+except RuntimeError as re:
+    print('''<h1>Internal Error</h1>
 
 <p>The registration system is currently unavailable.  Please try back later.</p>
 
-<p>Exception:</br>
+<p><strong>Exception:</strong></br>
 {the_error}
 </p>
-
-{end}'''.format(start     = process_form.header,
-                end       = process_form.footer,
-                the_error = ce)
+'''.format(the_error = re)
     )
 
 else:
     if "act" not in the_form:
-
-        print(process_form.header)
-        
         candidates = []
         for candidate in reg_db.candidates():
             candidates.append(process_form.candidate_template.format(
@@ -53,8 +48,6 @@ else:
         else:
             print('<strong>No pending registration requests.</strong>')
 
-        print(process_form.footer)
-
     else:
         cleaned_form = reg_scrub.cleanse_and_validate(the_form)
 
@@ -66,20 +59,22 @@ else:
             print("<strong>No action specified, or input malformed.</strong></br>")
 
         else:
-        
-            for deletion in deletions:
-                reqid = (deletion.split('_'))[-1]
-                try:
-                    reg_db.delete(reqid)
-                except RuntimeError as rte:
-                    print("<strong>Unable to cancel request {}: {}</strong></br>".format(
-                        reqid, rte))
-                else:
-                    print("<strong>Request {} canceled.</strong></br>".format(reqid))
+            if deletions:
+                for deletion in deletions:
+                    reqid = (deletion.split('_'))[-1]
+                    try:
+                        reg_db.delete(reqid)
+                    except RuntimeError as rte:
+                        print("<strong>Unable to cancel request {}: {}</strong></br>".format(
+                            reqid, rte))
+                    else:
+                        print("<strong>Request {} canceled.</strong></br>".format(reqid))
+                print("<hr>")
 
             for mod in modifications:
                 reqid = (mod.split('_'))[-1]
                 fields = Member.ordered_field_names()
+                request_changed = False
                 for field in fields:
                     try:
                         val = cleaned_form[field+'_'+reqid]
@@ -88,13 +83,19 @@ else:
                             print("<strong>Invalid field: {}</strong></br>".format(field))
                     else:
                         try:
-                            reg_db.modify(reqid, field, val)
+                            altered = reg_db.modify(reqid, field, val)
                         except RuntimeError as rte:
                             print("<strong>Unable to modify: {} (id: {})</strong></br>".format(
                                 rte, reqid))
                         else:
-                            print("<strong>Modified id {}, field {}. Now: {}</strong></br>".format(
-                                reqid, field, val))
+                            if altered:
+                                request_changed = True
+                                print("<strong>Modified request id {}, field {}. Now: {}</strong></br>".format(
+                                    reqid, field, val))
+                if not request_changed:
+                    print("<strong>No changes made to request {}.</strong></br>".format(
+                        reqid))
+                print("<hr>")
 
             for reg in registrations:
                 reqid = (reg.split('_'))[-1]
@@ -110,8 +111,15 @@ else:
                         print("<strong>Unable to add member in request id {} to database: {}</strong></br>".format(
                             reqid, str(rte)))
                     else:
+                        print("<strong>Request id {}: {} added to member db.</strong></br>".format(
+                            reqid, new_member.name()))
                         try:
                             register.queue_for_shell(new_member)
                         except RuntimeError as rte:
                             print("<strong>Unable to add member in request id {} to shell queue.</strong></br>".format(reqid))
+                        else:
+                            print("<strong>Request id {}: {} added to shell request queue.</strong></br>".format(reqid, new_member['username']))
+
+
+print(process_form.footer.format(os.path.basename(__file__)))
 

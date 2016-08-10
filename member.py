@@ -45,6 +45,10 @@ class Member():
         if key in self._fields:
             self._field[key] = val
 
+    def name(self):
+        '''Return the name of the Member as "first last".'''
+        return "{} {}".format(self['first'], self['last'])
+
     def string_values(self, order='init'):
         '''Return the values in the Member.  This is intended for usage in
         printing.  So if addr2 isn't defined for this Member, an empty
@@ -53,10 +57,10 @@ class Member():
         a Member.'''
         all_values = []
         for field in Member.ordered_field_names(order):
-            if field == 'addr2' and not self._field[field]:
+            if field == 'addr2' and not self[field]:
                 all_values.append('')
             else:
-                all_values.append(self._field[field])
+                all_values.append(self[field])
 
         return all_values
 
@@ -68,8 +72,8 @@ class Member():
         for the column).'''
         all_values = []
         for field in Member.ordered_field_names(order):
-            if field != 'addr2' or self._field[field] != None:
-                all_values.append(self._field[field])
+            if field != 'addr2' or self[field] != None:
+                all_values.append(self[field])
 
         return all_values
 
@@ -80,7 +84,7 @@ class Member():
         among the fields for the Member.'''
         all_field_names = []
         for field in Member.ordered_field_names(order):
-            if field != 'addr2' or self._field[field] != None:
+            if field != 'addr2' or self[field] != None:
                 all_field_names.append(field)
 
         return all_field_names
@@ -90,7 +94,7 @@ class Member():
         '''Return the count of fields for this Member.  The only thing that
         will change this from being the same number as "all the fields" is if
         addr2 isn't set.'''
-        if self._field['addr2']:
+        if self['addr2']:
             return len(self._fields)
         else:
             return len(self._fields) - 1
@@ -103,7 +107,7 @@ class Member():
 
     def shell_values(self):
         '''Return the fields necessary to create a shell account.'''
-        return list(self._field[f] for f in self.shell_names())
+        return list(self[f] for f in self.shell_names())
 
 
 class Requester(Member):

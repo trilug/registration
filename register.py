@@ -46,12 +46,14 @@ def add_to_member_db(new_member):
     else:
         _headers['Authorization'] = auth_header
         req = urllib.request.Request(_url, _request_vars, _headers)
-        results = urllib.request.urlopen(req)
+        try:
+            results = urllib.request.urlopen(req)
+        except:
+            raise RuntimeError("Call to add script failed.")
 
 
 def queue_for_shell(new_member):
     '''Add info to the list of shell accounts to add.'''
     with open(_queue, 'a') as queue:
         queue.write('\t'.join(new_member.shell_values())+'\n')
-        print('wrote to {}'.format(_queue))
 

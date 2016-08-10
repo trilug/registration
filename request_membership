@@ -3,6 +3,7 @@
 import cgi
 import cgitb
 import html
+import os.path
 
 import reg_form
 import reg_scrub
@@ -16,7 +17,9 @@ cgitb.enable(display=0, logdir=debugdir)
 
 the_form = cgi.FieldStorage()
 
-print('Content-type: text/html\n')
+print('''Content-type: text/html
+
+{}'''.format(reg_form.header))
 
 if "email" not in the_form:
     print(reg_form.full_form)
@@ -26,16 +29,14 @@ else:
         reg_db = RegDb(register.database)
 
     except:
-        print('''{start}
-
+        print(''' 
 <h1>Internal Error</h1>
 
 The registration system is currently unavailable.  Please try back later.
 
-{end}'''.format(start=reg_form.header, end=reg_form.footer))
+''')
 
     else:
-        print(reg_form.header)
         try:
             the_member = Member(*list(html.escape(the_form[var].value) for var in 
                             Member.ordered_field_names()
@@ -58,4 +59,4 @@ The registration system is currently unavailable.  Please try back later.
 person in order to complete the process.  See you there!</p>
 ''')
 
-        print(reg_form.footer)
+print(reg_form.footer.format(os.path.basename(__file__)))
