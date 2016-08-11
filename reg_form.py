@@ -47,7 +47,7 @@ process your request and get you set up in no time.</p>
 <td align="left" colspan=3><input type="text" name="addr1"></td>
 </tr>
 <tr>
-<td align="right">Street Address 2 [optional]:</td>
+<td align="right">Street Address 2 <strong>[*]</strong>:</td>
 <td align="left" colspan=3><input type="text" name="addr2"></td>
 </tr>
 <tr>
@@ -60,9 +60,10 @@ process your request and get you set up in no time.</p>
 <td align="left" colspan=3><input type="text" name="email"></td>
 </tr>
 <tr>
-<td align="right">Preferred User ID:</td>
+<td align="right">Preferred User ID <strong>[*]</strong>:</td>
 <td align="left" colspan=3><input type="text" name="username"></td>
 </tr>
+<tr><td align="center" colspan=4></br><strong>[*]</strong> Optional fields.  You can leave the User ID blank if you don't want shell or email.</td></tr>
 <tr>
 <td></td>
 <td align="center"></br><input type="submit" value="Submit"></td>
