@@ -24,13 +24,15 @@ try:
     reg_db = RegDb(register.database)
 
 except RuntimeError as re:
-    print('''<h1>Internal Error</h1>
+    print('''<div align="center">
+<h1>Internal Error</h1>
 
 <p>The registration system is currently unavailable.  Please try back later.</p>
 
 <p><strong>Exception:</strong></br>
 {the_error}
 </p>
+</div>
 '''.format(the_error = re)
     )
 
@@ -46,7 +48,7 @@ else:
             print('\n'.join(candidates))
             print(process_form.end_form)
         else:
-            print('<strong>No pending registration requests.</strong>')
+            print('<div align="center"><p><strong>No pending registration requests.</strong></p></div>')
 
     else:
         cleaned_form = reg_scrub.cleanse_and_validate(the_form)
@@ -56,7 +58,7 @@ else:
         registrations = list(var for var in cleaned_form if 'reg_' in var)
 
         if not (deletions or modifications or registrations):
-            print("<strong>No action specified, or input malformed.</strong></br>")
+            print('<div align="center"><p><strong>No action specified, or input malformed.</strong></p></div>')
 
         else:
             if deletions:
@@ -80,13 +82,13 @@ else:
                         val = cleaned_form[field+'_'+reqid]
                     except KeyError:
                         if field != 'addr2':
-                            print("<strong>Invalid field: {}</strong></br>".format(field))
+                            print('<strong>Invalid value for field "{}"</strong></br>'.format(field))
                     else:
                         try:
                             altered = reg_db.modify(reqid, field, val)
                         except RuntimeError as rte:
-                            print("<strong>Unable to modify: {} (id: {})</strong></br>".format(
-                                rte, reqid))
+                            print("<strong>Unable to modify request id {}: {}</strong></br>".format(
+                                reqid, rte))
                         else:
                             if altered:
                                 request_changed = True
