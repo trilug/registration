@@ -81,7 +81,7 @@ else:
                     try:
                         val = cleaned_form[field+'_'+reqid]
                     except KeyError:
-                        if field != 'addr2':
+                        if field not in Member.optional_field_names():
                             print('<strong>Invalid value for field "{}"</strong></br>'.format(field))
                     else:
                         try:
@@ -115,12 +115,16 @@ else:
                     else:
                         print("<strong>Request id {}: {} added to member db.</strong></br>".format(
                             reqid, new_member.name()))
-                        try:
-                            register.queue_for_shell(new_member)
-                        except RuntimeError as rte:
-                            print("<strong>Unable to add member in request id {} to shell queue.</strong></br>".format(reqid))
+
+                        if new_member.wants_shell():
+                            try:
+                                register.queue_for_shell(new_member)
+                            except RuntimeError as rte:
+                                print("<strong>Unable to add member in request id {} to shell queue.</strong></br>".format(reqid))
+                            else:
+                                print("<strong>Request id {}: {} added to shell request queue.</strong></br>".format(reqid, new_member['username']))
                         else:
-                            print("<strong>Request id {}: {} added to shell request queue.</strong></br>".format(reqid, new_member['username']))
+                            print("<strong>Request id {}: No shell/email access requested.</strong></br>".format(reqid))
 
 
 print(process_form.footer.format(os.path.basename(__file__)))

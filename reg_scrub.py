@@ -16,7 +16,7 @@ def cleanse_and_validate(web_form):
             try:
                 tmp.pop(f+'_'+reqid)
             except KeyError:
-                if f not in _actions and f != 'addr2':
+                if f not in _actions and f not in Member.optional_field_names():
                     missing_field = True
         if len(tmp) or missing_field:
             cleansed_form.pop(reqid)

@@ -44,8 +44,8 @@ class RegDb():
     def insert(self, new_member):
         '''Add a Member to the request queue.'''
 
-        # Allowing addr2 to go through with the table default of NULL if
-        # it wasn't set at instantiation.
+        # Allowing optional fields to go through with the table default of NULL
+        # if they weren't set at instantiation.
         try:
             self._cursor.execute('''INSERT INTO {table}
                         ({fields}) VALUES ({places})'''.format(
