@@ -25,16 +25,15 @@ if "email" not in the_form:
     print(reg_form.full_form)
 
 else:
+    print('<div align="center">')
+
     try:
         reg_db = RegDb(register.database)
 
     except:
-        print(''' 
-<h1>Internal Error</h1>
+        print('''<h1>Internal Error</h1>
 
-The registration system is currently unavailable.  Please try back later.
-
-''')
+The registration system is currently unavailable.  Please try back later.''')
 
     else:
         try:
@@ -55,8 +54,9 @@ The registration system is currently unavailable.  Please try back later.
 
             else:
                 print('''
-<p>Thank you for requesting membership in TriLUG!  Be sure to come to a meeting in
-person in order to complete the process.  See you there!</p>
-''')
+<p>Thank you for requesting membership in TriLUG!  Be sure to come to a</br>
+meeting in person in order to complete the process.  See you there!</p>''')
+
+    print('</div>')
 
 print(reg_form.footer.format(os.path.basename(__file__)))
