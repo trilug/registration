@@ -22,8 +22,11 @@ cgitb.enable(display=0, logdir=debugdir)
 reg_page = fromstring(open('reg_form.html', 'r').read())
 
 the_form = cgi.FieldStorage()
+fields = {}
+for k in the_form.keys():
+    fields[k] = the_form.getfirst(k)
 
-#reg_page.forms[0].fields.update()
+reg_page.forms[0].fields.update(fields)
 
 if "email" in the_form:
     try:
