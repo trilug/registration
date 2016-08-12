@@ -5,7 +5,8 @@ import cgitb
 import html
 import os.path
 
-import reg_form
+from lxml.html import fromstring,tostring
+
 import reg_scrub
 import register
 
@@ -15,18 +16,13 @@ from reg_request_db import RegDb
 debugdir = '/tmp'
 cgitb.enable(display=0, logdir=debugdir)
 
+reg_page = fromstring(open('reg_form.html', 'r').read())
+
 the_form = cgi.FieldStorage()
 
-print('''Content-type: text/html
+#reg_page.forms[0].fields.update()
 
-{}'''.format(reg_form.header))
-
-if "email" not in the_form:
-    print(reg_form.full_form)
-
-else:
-    print('<div align="center">')
-
+if "email" in the_form:
     try:
         reg_db = RegDb(register.database)
 
@@ -53,10 +49,10 @@ The registration system is currently unavailable.  Please try back later.''')
                 print('<p><strong>Error: {err}</strong></p>'.format(err = str(e)))
 
             else:
-                print('''
+                msg = '''
 <p>Thank you for requesting membership in TriLUG!  Be sure to come to a</br>
-meeting in person in order to complete the process.  See you there!</p>''')
+meeting in person in order to complete the process.  See you there!</p>'''
 
-    print('</div>')
+print('''Content-type: text/html
 
-print(reg_form.footer.format(os.path.basename(__file__)))
+''', tostring(reg_page, encoding="unicode"))
