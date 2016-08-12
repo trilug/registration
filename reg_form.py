@@ -24,7 +24,7 @@ Back to <a href="/">TriLUG</a>
 
 full_form = '''
 
-<form method="POST" action="/cgi-bin/request_membership">
+<form method="POST" action="#">
 <div align="center">
 
 <div style="width:60%">
