@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import sys
+sys.stdout = open(sys.stdout.fileno(), mode='w', encoding='utf-8', buffering=1)
+
 import cgi
 import cgitb
 import html
@@ -53,6 +56,6 @@ The registration system is currently unavailable.  Please try back later.''')
 <p>Thank you for requesting membership in TriLUG!  Be sure to come to a</br>
 meeting in person in order to complete the process.  See you there!</p>'''
 
-print('''Content-type: text/html
+print('''Content-type: text/html; charset=utf-8
 
 ''', tostring(reg_page, encoding="unicode"))
