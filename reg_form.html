@@ -5,8 +5,19 @@
   <meta name="generator" content=
   "HTML Tidy for HTML5 for Linux version 5.2.0" />
   <title>Join TriLUG!</title>
+  <style>
+    .error {
+      color: red;
+    }
+  </style>
 </head>
 <body>
+  <div id="missing" style="display: none">
+    <p><strong>Error:  Required field(s) not filled out.</strong></p>
+  </div>
+  <div class="error">
+    <p id="exception"></p>
+  </div>
   <form method="post" action="#">
     <div align="center">
       <div style="width:60%">
@@ -20,23 +31,23 @@
       </div>
       <hr width="50%" />
       <table cellspacing="1" cellpadding="1" border="0">
-        <tr>
-          <td align="right">First Name:</td>
-          <td align="left"><input type="text" name="first" /></td>
-          <td align="right">Last Name:</td>
-          <td align="left"><input type="text" name="last" /></td>
-        </tr>
-        <tr>
-          <td align="right">Street Address 1:</td>
-          <td align="left" colspan="3"><input type="text" name=
-          "addr1" /></td>
-        </tr>
-        <tr>
-          <td align="right">Street Address 2
-          <strong>[*]</strong>:</td>
-          <td align="left" colspan="3"><input type="text" name=
-          "addr2" /></td>
-        </tr>
+          <tr>
+              <td align="right">First Name:</td>
+              <td align="left"><input type="text" name="first" /></td>
+              <td align="right">Last Name:</td>
+              <td align="left"><input type="text" name="last" /></td>
+          </tr>
+          <tr>
+              <td align="right">Street Address 1:</td>
+              <td align="left" colspan="3"><input type="text" name=
+              "addr1" /></td>
+          </tr>
+          <tr>
+              <td align="right">Street Address 2
+                  <strong>[*]</strong>:</td>
+              <td align="left" colspan="3"><input type="text" name=
+              "addr2" /></td>
+          </tr>
         <tr>
           <td align="right" colspan="2">City: <input type="text"
           name="city" /></td>
@@ -72,6 +83,14 @@
       </table>
     </div>
   </form>
+
+  <div id="success" style="display: none">
+    <p>
+      Thank you for requesting membership in TriLUG!  Be sure to come to a
+      meeting in person in order to complete the process.  See you there!
+    </p>
+  </div>
+
   <hr width="50%" />
   <div align="center">
     Reload the <a href="/cgi-bin/{}">form</a> <strong>|</strong>
