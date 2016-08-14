@@ -28,6 +28,10 @@
       display: block;
     }
 
+    input[name="zipcode"] {
+      width: 5em;
+    }
+
     input[type="submit"] {
       margin-left: auto;
       margin-right: auto;
@@ -55,48 +59,48 @@
 
     <label>
       First Name
-      <input type="text" name="first" />
+      <input name="first" />
     </label>
 
     <label>
       Last Name
-      <input type="text" name="last" />
+      <input name="last" />
     </label>
 
     <label>
       Street Address 1
-      <input type="text" name="addr1" />
+      <input name="addr1" />
     </label>
 
     <label>
       Street Address 2
       <strong>[*]</strong>
-      <input type="text" name="addr2" />
+      <input name="addr2" />
     </label>
 
     <label>
       City
-      <input type="text" name="city" />
+      <input name="city" />
     </label>
 
     <label>
       State
-      <input type="text" name="state" size="2" />
+      <input name="state" size="2" />
     </label>
 
     <label>Zip
-      <input type="text" name="zipcode" size="5" />
+      <input type="number" name="zipcode" />
     </label>
 
     <label>
       Email
-      <input type="text" name= "email" />
+      <input type="email" name="email" />
     </label>
 
     <label>
       Preferred User ID
       <strong>[*]</strong>
-      <input type="text" name= "username" />
+      <input name="username" />
     </label>
 
     <p>
