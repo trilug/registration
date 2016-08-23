@@ -22,7 +22,8 @@ cgitb.enable(display=1, logdir=debugdir)
 
 reg_page = fromstring(
         Template(
-            open('reg_form.html', 'r').read()).safe_substitute(
+                open('reg_form.html', 'r').read()
+            ).safe_substitute(
                 script_name=os.path.basename(__file__)
             ))
 
