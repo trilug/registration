@@ -9,6 +9,7 @@ import html
 import os.path
 
 from lxml.html import fromstring,tostring
+from string import Template
 
 import reg_scrub
 import register
@@ -19,7 +20,11 @@ from reg_request_db import RegDb
 debugdir = '/tmp'
 cgitb.enable(display=1, logdir=debugdir)
 
-reg_page = fromstring(open('reg_form.html', 'r').read())
+reg_page = fromstring(
+        Template(
+            open('reg_form.html', 'r').read()).safe_substitute(
+                script_name=os.path.basename(__file__)
+            ))
 
 the_form = cgi.FieldStorage()
 fields = {}

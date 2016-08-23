@@ -12,7 +12,7 @@ STEERING_SRCS = $(STEERING_EXES) $(STEERING_LIBS)
 STEERING_DSTS = $(addprefix $(STEERING_DIR), $(STEERING_SRCS))
 
 MAIN_EXES = request_membership
-MAIN_LIBS = register.py reg_form.py reg_request_db.py reg_scrub.py member.py
+MAIN_LIBS = reg_form.html register.py reg_request_db.py reg_scrub.py member.py
 MAIN_SRCS = $(MAIN_EXES) $(MAIN_LIBS)
 MAIN_DSTS = $(addprefix $(MAIN_DIR), $(MAIN_SRCS))
 
