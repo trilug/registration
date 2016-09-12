@@ -1,36 +1,30 @@
-import unittest
-
 import member
+import pytest
 
-class MemberTests(unittest.TestCase):
+USERS = [['first', 'last', 'addr1', 'city', 'state', 'zipcode', 'email']]
+USERS.append(USERS[0] + ['username'])
+USERS.append(USERS[0] + ['addr2'])
+USERS.append(USERS[1] + ['addr2'])
 
-    def test_values_noaddr2_init_order(self):
-        user1 = ('first', 'last', 'addr1', 'city', 'state', 'zipcode', 'email', 'username')
-        nm = member.Member(*user1)
-        self.assertEqual(list(user1),
-                list(nm.values()),
-                "Bad strings.\nExpected: {}\n     Got: {}\n".format(
-                    ', '.join(user1),
-                    ', '.join(nm.values())))
+@pytest.fixture(params=USERS, ids=['minimal', 'min-plus-username', 'min-plus-addr2', 'full'])
+def new_member(request):
+    return [request.param, member.Member(*request.param)]
 
-    def test_values_noaddr2_print_order(self):
-        user1 = ('first', 'last', 'addr1', 'city', 'state', 'zipcode', 'email', 'username')
-        nm = member.Member(*user1)
-        self.assertEqual(list(user1),
-                list(nm.values('print')),
-                "Bad strings.\nExpected: {}\n     Got: {}\n".format(
-                    ', '.join(user1),
-                    ', '.join(nm.values('print'))))
+def test_values(new_member):
+    assert set(new_member[0]) == set(new_member[1].values())
 
-if __name__ == "__main__":
-    unittest.main()
-
+###
+### TBD...
+###
 #    def ordered_field_names(cls, order='init'):
-#    def __init__(self, first, last, addr1, city, state,
+#    def optional_field_names(cls):
+#    def name(self):
 #    def string_values(self, order='init'):
 #    def values(self, order='init'):
 #    def field_names(self, order='init'):
 #    def field_count(self):
+#    def wants_shell(self):
+#    def shell_names(self):
+#    def shell_values(self):
 #    def active_request_field_names(order='init'):
-#    def __init__(self, reqid, first, last, addr1, city, state,
 #    def get_reqid(self):
