@@ -12,7 +12,7 @@ from member         import Member
 from reg_request_db import RegDb
 
 debugdir = '/tmp'
-cgitb.enable(display=0, logdir=debugdir)
+cgitb.enable(display=1, logdir=debugdir)
 
 the_form = cgi.FieldStorage()
 
@@ -39,10 +39,15 @@ except RuntimeError as re:
 else:
     if "act" not in the_form:
         candidates = []
+        ordered_fields = [ 'first', 'last', 'addr1', 'addr2',
+                           'city', 'state', 'zipcode', 'email', 'username' ]
         for candidate in reg_db.candidates():
-            candidates.append(process_form.candidate_template.format(
-                *candidate.string_values('print'),
-                reqid=candidate.get_reqid()))
+            candidates.append(
+                    process_form.candidate_template.format(
+                        *list(candidate[field] if candidate[field] else '' for field in ordered_fields),
+                        reqid=candidate['reqid']
+                        )
+                    )
         if candidates:
             print(process_form.start_form)
             print('\n'.join(candidates))
@@ -75,9 +80,8 @@ else:
 
             for mod in modifications:
                 reqid = (mod.split('_'))[-1]
-                fields = Member.ordered_field_names()
                 request_changed = False
-                for field in fields:
+                for field in Member.field_names():
                     try:
                         val = cleaned_form[field+'_'+reqid]
                     except KeyError:

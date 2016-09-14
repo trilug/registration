@@ -31,9 +31,9 @@ def add_to_member_db(new_member):
 
     _varlist = list(
             (_member_to_add[v], new_member[v])
-            for v in new_member.field_names() if v in _member_to_add)
+            for v in new_member.keys() if v in _member_to_add)
     _varlist.append(('submit', 'Submit'))
-    _request_vars = urllib.parse.urlencode(_varlist).encode('ascii')
+    _request_vars = urllib.parse.urlencode(_varlist).encode('utf-8')
 
     _headers = {
             "Content-Type": "application/x-www-form-urlencoded"

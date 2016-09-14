@@ -44,16 +44,22 @@ class RegDb():
     def insert(self, new_member):
         '''Add a Member to the request queue.'''
 
+        # Quick-n-dirty little utility dict to ensure data integrity below.
+        fix = {
+                'zipcode': lambda k: int(k),
+                'reqid':   lambda k: int(k),
+              }
+
         # Allowing optional fields to go through with the table default of NULL
         # if they weren't set at instantiation.
         try:
             self._cursor.execute('''INSERT INTO {table}
                         ({fields}) VALUES ({places})'''.format(
                                 table  = _tablename,
-                                fields = ', '.join(new_member.field_names()),
-                                places = ', '.join(list('?' * new_member.field_count()))
+                                fields = ', '.join(new_member.keys()),
+                                places = ', '.join(list('?' * len(new_member)))
                             ),
-                        new_member.values()
+                        list(fix[f](new_member[f]) if f in fix else new_member[f] for f in new_member.keys())
                     )
 
         # Tailor the exception depending on why the insertion failed.
@@ -61,10 +67,10 @@ class RegDb():
             new_exception = "Unable to insert: "
             if 'username' in str(ie):
                 new_exception += "username {} was previously requested.".format(
-                    new_member.username)
+                    new_member['username'])
             elif 'email' in str(ie):
                 new_exception += "email address {} is associated with a previous request.".format(
-                    new_member.username)
+                    new_member['username'])
 
             raise RuntimeError(new_exception)
 
@@ -124,15 +130,16 @@ class RegDb():
         '''Fetch all pending membership requests.'''
         try:
             self._cursor.execute('''SELECT {fields} FROM {table}'''.format(
-                fields = ', '.join(Requester.active_request_field_names()),
+                fields = ', '.join(Requester.field_names()),
                 table = _tablename))
 
         except sqlite3.Error as e:
             raise RuntimeError("Unable to fetch requests: " + str(e))
 
         else:
+            fields = Requester.field_names()
             for user in self._cursor:
-                new_member = Requester(*user[:])
+                new_member = Requester({fields[i]:user[i] for i in range(len(fields))})
                 yield new_member
 
     def candidate(self, reqid):
@@ -140,11 +147,13 @@ class RegDb():
         try:
             self._cursor.execute(
                     '''SELECT {fields} FROM {table} WHERE reqid = ?'''.format(
-                        fields = ', '.join(Requester.active_request_field_names()),
+                        fields = ', '.join(Requester.field_names()),
                         table = _tablename),
                     (reqid,))
         except sqlite3.Error as e:
             raise RuntimeError("Unable to fetch request id {}: {}".format(
                 reqid, str(e)))
         else:
-            return Requester(*self._cursor.fetchone())
+            fields = Requester.field_names()
+            user   = self._cursor.fetchone()
+            return Requester({fields[i]:user[i] for i in range(len(fields))})

@@ -3,9 +3,8 @@ import html
 import re
 from member import Member
 
-_actions = ('del', 'mod', 'reg')
-_allowed_fields = Member.ordered_field_names()
-_allowed_fields.extend(_actions)
+_actions        = ('del', 'mod', 'reg')
+_allowed_fields = Member.field_names() + _actions
 
 def cleanse_and_validate(web_form):
     cleansed_form = sanitize(web_form)
@@ -72,6 +71,6 @@ def val_ok(string):
     # If any character besides those listed in the character class below
     # are in the string, then we call shenanigans.  Otherwise, we'll say
     # it's legal.
-    if not re.search(r'[^-a-zA-Z0-9_.@# \']', string):
+    if not re.search(r'[^-a-zA-Z0-9_.@#+ \']', string):
         return True
     return False

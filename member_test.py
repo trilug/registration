@@ -1,30 +1,60 @@
 import member
 import pytest
 
-USERS = [['first', 'last', 'addr1', 'city', 'state', 'zipcode', 'email']]
-USERS.append(USERS[0] + ['username'])
-USERS.append(USERS[0] + ['addr2'])
-USERS.append(USERS[1] + ['addr2'])
+from copy import deepcopy
 
-@pytest.fixture(params=USERS, ids=['minimal', 'min-plus-username', 'min-plus-addr2', 'full'])
-def new_member(request):
-    return [request.param, member.Member(*request.param)]
+CASE = {'minimal':{
+            'data':{
+                'first':'myfn', 'last':'myln', 'addr1':'myad1', 'city':'mycty',
+                'state':'st', 'zipcode':'12345', 'email':'tester@example.com'
+                },
+            'expected':True}}
 
-def test_values(new_member):
-    assert set(new_member[0]) == set(new_member[1].values())
+CASE['min-plus-username'] = deepcopy(CASE['minimal'])
+CASE['min-plus-username']['data']['username'] = 'myusername'
+
+CASE['min-plus-addr2'] = deepcopy(CASE['minimal'])
+CASE['min-plus-addr2']['data']['addr2'] = 'myad2'
+
+CASE['full'] = deepcopy(CASE['min-plus-username'])
+CASE['full']['data']['addr2'] = 'myad2'
+
+CASE['bogus'] = deepcopy(CASE['minimal'])
+CASE['bogus']['data']['nosuchfield'] = 'bogosity'
+CASE['bogus']['expected'] = False
+
+@pytest.fixture(scope='module', params=list(CASE.values()), ids=list(CASE.keys()))
+def case(request):
+    return {
+            'source':request.param['data'],
+            'generated':member.Member(request.param['data']),
+            'expected':request.param['expected'],
+           }
+
+def test_values(case):
+    assert (set(case['source'].values()) == set(case['generated'].values())) == case['expected']
+
+def test_keys(case):
+    assert (set(case['source'].keys()) == set(case['generated'].keys())) == case['expected']
+
+def test_name(case):
+    assert case['generated'].name() == case['source']['first'] + ' ' + case['source']['last']
+
+def test_wants_shell(case):
+    assert case['generated'].wants_shell() == ('username' in case['source'])
+
+def test_shell_values(case):
+    if case['generated'].wants_shell():
+        assert (case['generated'].shell_values() == list(case['source'][k] for k in ('username', 'first', 'last', 'email'))) == case['expected']
+
+def test_len(case):
+    assert (len(case['source']) == len(case['generated'])) == case['expected']
 
 ###
 ### TBD...
 ###
-#    def ordered_field_names(cls, order='init'):
+#    def field_names(cls):
 #    def optional_field_names(cls):
-#    def name(self):
-#    def string_values(self, order='init'):
-#    def values(self, order='init'):
-#    def field_names(self, order='init'):
-#    def field_count(self):
-#    def wants_shell(self):
-#    def shell_names(self):
-#    def shell_values(self):
-#    def active_request_field_names(order='init'):
-#    def get_reqid(self):
+#    def __getitem__(self, key):
+#    def __setitem__(self, key, val):
+#    def __init__(self, init_vals={}):
