@@ -1,13 +1,46 @@
-# TODO: Move some of the value validation and/or cleansing in here from reg_scrub
+import re
+
+def _is_numeric(val):
+    return re.search(r'\D', str(val)) == None
+
+def _is_valid_email(val):
+    return re.match(r'[-\w.+]+@(?:[-\w]+\.)+[-\w]+', val) != None
+
+def _is_valid_name(val):
+    return re.search(r"[^-\w '.]", val) == None
+
+def _is_valid_address(val):
+    return re.search(r"[^-\w '#.]", val) == None
+
+def _is_valid_username(val):
+    return ((re.search(r"[^-\w.]",  val) == None) and
+            (re.search(r"[a-zA-Z]", val) != None))
+
+def _is_valid_state(val):
+    return re.search(r'\A[a-zA-Z][a-zA-Z]\Z', val) != None
 
 class Member():
     '''The basic class that holds a prospective member and all of his or her
     registration info.  It's not much more than a dict with some validation
     and constraints around the keys and values.'''
 
-    _mandatory_fields = ('first', 'last', 'addr1', 'city', 'state', 'zipcode', 'email')
+    _mandatory_fields = ('first', 'last', 'addr1', 'city', 'state',
+                         'zipcode', 'email')
     _optional_fields  = ('addr2', 'username')
     _all_fields       = _mandatory_fields + _optional_fields
+
+    _valid_field = {
+            'first':    _is_valid_name,
+            'last':     _is_valid_name,
+            'addr1':    _is_valid_address,
+            'addr2':    lambda f: f == None or _is_valid_address(f),
+            'city':     _is_valid_name,
+            'state':    _is_valid_state,
+            'zipcode':  _is_numeric,
+            'email':    _is_valid_email,
+            'username': lambda f: f == None or _is_valid_username(f),
+            'reqid':    _is_numeric,
+        }
 
     @classmethod
     def field_names(cls):
@@ -25,7 +58,7 @@ class Member():
         self._field = {}
         for field in self.__class__.field_names():
             if field in init_vals:
-                self._field[field] = init_vals[field]
+                self[field] = init_vals[field]
 
     def __contains__(self, key):
         '''Indicate whether a field is set for the Member.'''
@@ -40,7 +73,8 @@ class Member():
     def __setitem__(self, key, val):
         '''Set the value of one of the fields.'''
         if key in self.__class__.field_names():
-            self._field[key] = val
+            if self.__class__._valid_field[key](val):
+                self._field[key] = str(val).strip()
 
     def __len__(self):
         '''In many ways emulating a dict, so len(m) should work.'''
@@ -76,9 +110,3 @@ class Requester(Member):
 
     _mandatory_fields = Member._mandatory_fields + tuple(['reqid'])
     _all_fields       = _mandatory_fields + Member._optional_fields
-
-    def __init__(self, init_vals={}):
-        '''Just instantiate a Member and add the request id.'''
-        super(Requester, self).__init__({k:init_vals[k] for k in init_vals.keys() if k != 'reqid'})
-        if 'reqid' in init_vals:
-            self._field['reqid'] = init_vals['reqid']
