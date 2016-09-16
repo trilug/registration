@@ -11,7 +11,6 @@ import os.path
 from lxml.html import fromstring,tostring
 from string import Template
 
-import reg_scrub
 import register
 
 from member import Member
@@ -42,13 +41,13 @@ if "email" in the_form:
         reg_db = RegDb(register.database)
 
     except:
-        err_elem.text = 'The registration system is currently unavailable.  Please try back later.'
+        err_elem.text = ('The registration system is currently unavailable.  ' +
+                         'Please try back later.')
 
     else:
         try:
-            the_member = Member( {var:html.escape(the_form[var].value)
-                         for var in Member.field_names()
-                         if var in the_form and reg_scrub.val_ok(the_form[var].value)})
+            the_member = Member({var:the_form[var].value
+                         for var in Member.field_names() if var in the_form})
 
         except TypeError:
             reg_page.xpath('//*[@id="missing"]')[0].set('style', '')

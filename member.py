@@ -36,7 +36,7 @@ class Member():
             'addr2':    lambda f: f == None or _is_valid_address(f),
             'city':     _is_valid_name,
             'state':    _is_valid_state,
-            'zipcode':  _is_numeric,
+            'zipcode':  lambda f: len(f) == 5 and _is_numeric(f),
             'email':    _is_valid_email,
             'username': lambda f: f == None or _is_valid_username(f),
             'reqid':    _is_numeric,
