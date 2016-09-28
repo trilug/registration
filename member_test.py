@@ -50,6 +50,34 @@ def test_shell_values(case):
 def test_len(case):
     assert (len(case['source']) == len(case['generated'])) == case['expected']
 
+ZIPS = {
+        'plain':                      { 'value':'12345',       'expected':True },
+        'leading_zero':               { 'value':'01234',       'expected':True },
+        'extended':                   { 'value':'12345-6789',  'expected':True },
+        'extended_leading_zero':      { 'value':'12345-0678',  'expected':True },
+        'too_short':                  { 'value':'1234',        'expected':False },
+        'too_long':                   { 'value':'123456',      'expected':False },
+        'too_many_fields':            { 'value':'12345-67-89', 'expected':False },
+        'non_numeric':                { 'value':'X2345',       'expected':False },
+        'no_first_field':             { 'value':'-1234',       'expected':False },
+        'plain_leading_spaces':       { 'value':' 12345',      'expected':False },
+        'plain_trailing_spaces':      { 'value':'12345 ',      'expected':False },
+        'plain_embedded_spaces':      { 'value':'123 45',      'expected':False },
+        'extended_leading_spaces':    { 'value':' 12345-6789', 'expected':False },
+        'extended_trailing_spaces':   { 'value':'12345-6789 ', 'expected':False },
+        'extended_embedded_spaces_1': { 'value':'123 45-6789', 'expected':False },
+        'extended_embedded_spaces_2': { 'value':'12345 -6789', 'expected':False },
+        'extended_embedded_spaces_3': { 'value':'12345- 6789', 'expected':False },
+        'extended_embedded_spaces_4': { 'value':'12345-67 89', 'expected':False },
+        }
+
+@pytest.fixture(scope='module', params=list(ZIPS.values()), ids=list(ZIPS.keys()))
+def testzip(request):
+    return request.param
+
+def test_is_valid_zipcode(testzip):
+    assert member._is_valid_zipcode(testzip['value']) == testzip['expected']
+
 ###
 ### TBD...
 ###

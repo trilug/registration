@@ -12,6 +12,9 @@ def _is_valid_name(val):
 def _is_valid_address(val):
     return re.search(r"[^-\w '#.]", val) == None
 
+def _is_valid_zipcode(val):
+    return re.match(r'\d{5}(?:-\d{4})?\Z', val) != None
+
 def _is_valid_username(val):
     return ((re.search(r"[^-\w.]",  val) == None) and
             (re.search(r"[a-zA-Z]", val) != None))
@@ -36,7 +39,7 @@ class Member():
             'addr2':    lambda f: f == None or _is_valid_address(f),
             'city':     _is_valid_name,
             'state':    _is_valid_state,
-            'zipcode':  lambda f: len(f) == 5 and _is_numeric(f),
+            'zipcode':  _is_valid_zipcode,
             'email':    _is_valid_email,
             'username': lambda f: f == None or _is_valid_username(f),
             'reqid':    _is_numeric,
