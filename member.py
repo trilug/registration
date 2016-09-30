@@ -1,10 +1,17 @@
 import re
 
 def _is_numeric(val):
-    return re.search(r'\D', str(val)) == None
+    return len(val) > 0 and re.search(r'\D', str(val)) == None
 
+# This is a *really* loose definition of a "valid" email.  Only
+# checking for basic structure, and not a lot else.
+# Basically, a word character, followed by zero or more other
+# word characters, dashes, dots, and plusses, followed by the
+# '@' symbol, followed by a word character, followed by one or
+# more groups of word characters ending with a dot, ending with
+# a group of word characters and an optional dot.
 def _is_valid_email(val):
-    return re.match(r'[-\w.+]+@(?:[-\w]+\.)+[-\w]+', val) != None
+    return re.match(r'\w[-\w.+]*@\w(?:[-\w]+\.)+\w+\.?\Z', val) != None
 
 def _is_valid_name(val):
     return re.search(r"[^-\w '.]", val) == None
