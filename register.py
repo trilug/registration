@@ -27,15 +27,15 @@ def add_to_member_db(new_member):
     '''This currently backposts to the existing member tool on the
     steering site.  It will eventually directly interface with the
     database, but this is the quickest way to get us up for now.'''
-    _url = 'https://steering.trilug.org/member_tool/?cmd=add'
+    url = 'https://steering.trilug.org/member_tool/?cmd=add'
 
-    _varlist = list(
+    varlist = list(
             (_member_to_add[v], new_member[v])
             for v in new_member.keys() if v in _member_to_add)
-    _varlist.append(('submit', 'Submit'))
-    _request_vars = urllib.parse.urlencode(_varlist).encode('utf-8')
+    varlist.append(('submit', 'Submit'))
+    request_vars = urllib.parse.urlencode(varlist).encode('utf-8')
 
-    _headers = {
+    headers = {
             "Content-Type": "application/x-www-form-urlencoded"
             }
 
@@ -44,8 +44,8 @@ def add_to_member_db(new_member):
     except KeyError:
         raise RuntimeError('Unauthorized')
     else:
-        _headers['Authorization'] = auth_header
-        req = urllib.request.Request(_url, _request_vars, _headers)
+        headers['Authorization'] = auth_header
+        req = urllib.request.Request(url, request_vars, headers)
         try:
             results = urllib.request.urlopen(req)
         except:
