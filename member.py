@@ -3,28 +3,35 @@ import re
 def _is_numeric(val):
     return len(val) > 0 and re.search(r'\D', str(val)) == None
 
-# This is a *really* loose definition of a "valid" email.  Only
-# checking for basic structure, and not a lot else.
-# Basically, a word character, followed by zero or more other
-# word characters, dashes, dots, and plusses, followed by the
-# '@' symbol, followed by a word character, followed by one or
-# more groups of word characters ending with a dot, ending with
-# a group of word characters and an optional dot.
+# This is a *really* loose definition of a "valid" email.  Only checking
+# for basic structure, and not a lot else.  Basically, a word character,
+# followed by zero or more other word characters, dashes, dots, and plusses,
+# followed by the '@' symbol, followed by a word character, followed by one
+# or more groups of word characters ending with a dot, ending with a group
+# of word characters and an optional dot.
 def _is_valid_email(val):
     return re.match(r'\w[-\w.+]*@\w(?:[-\w]+\.)+\w+\.?\Z', val) != None
 
+# A valid name: A) contains only alphanumeric characters, dots, dashes,
+# apostrophes, commas, and spaces; and B) contains at least one letter.
+# The first regex asserts that the value does not contain any character
+# which is NOT one of the aforementioned types.  The second asserts that
+# it starts with a character that is not a dash space, apostrophe, dot,
+# or number; ie - a letter.  We can't just use "^[A-Za-z]", because that
+# doesn't include such things as accented characters.
 def _is_valid_name(val):
-    return re.search(r"[^-\w '.]", val) == None
+    return ((re.search(r"[^-\w '.,]", val) == None) and
+            (re.search(r"\A[^-0-9 '.]", val) != None))
 
 def _is_valid_address(val):
-    return re.search(r"[^-\w '#.]", val) == None
+    return len(val) > 0 and re.search(r"[^-\w '#.]", val) == None
 
 def _is_valid_zipcode(val):
     return re.match(r'\d{5}(?:-\d{4})?\Z', val) != None
 
 def _is_valid_username(val):
     return ((re.search(r"[^-\w.]",  val) == None) and
-            (re.search(r"[a-zA-Z]", val) != None))
+            (re.search(r"^[a-zA-Z]", val) != None))
 
 def _is_valid_state(val):
     return re.search(r'\A[a-zA-Z][a-zA-Z]\Z', val) != None

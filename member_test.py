@@ -164,6 +164,34 @@ def test_is_valid_email(testemail):
     assert member._is_valid_email(testemail['value']) == testemail['expected']
 
 
+#
+# Test the name validator
+#
+NAMES = {
+        'single':               { 'value':'Linus',              'expected':True },
+        'full':                 { 'value':'Linus Torvalds',     'expected':True },
+        'hyphenated':           { 'value':'Betty Smith-Rubble', 'expected':True },
+        'with_apostrophe':      { 'value':"Eblis O'Shaunnesy",  'expected':True },
+        'with_number':          { 'value':'Mary Smith the 3rd', 'expected':True },
+        'with_comma':           { 'value':'Barney Smith, Jr',   'expected':True },
+        'with_comma_and_dot':   { 'value':'Barney Smith, Jr.',  'expected':True },
+        'with_initials':        { 'value':'I.C. You',           'expected':True },
+        'leading_umlaut':       { 'value':'Öscar the Grouch',   'expected':True },
+        'accented_char':        { 'value':'Renée',              'expected':True },
+        'empty':                { 'value':'',                   'expected':False },
+        'plain_leading_spaces': { 'value':' Linus',             'expected':False },
+        'leading_dot':          { 'value':'.Linus',             'expected':False },
+        'bad_char':             { 'value':'Robot #3',           'expected':False },
+        'tab_char':             { 'value':'Erin	Smith',         'expected':False },
+        }
+
+@pytest.fixture(scope='module', params=list(NAMES.values()), ids=list(NAMES.keys()))
+def testname(request):
+    return request.param
+
+def test_is_valid_name(testname):
+    assert member._is_valid_name(testname['value']) == testname['expected']
+
 
 ###
 ### TBD...
@@ -180,8 +208,6 @@ def test_is_valid_email(testemail):
 #    def name(self):
 #    def wants_shell(self):
 #    def shell_values(self):
-# def _is_valid_email(val):
-# def _is_valid_name(val):
 # def _is_valid_address(val):
 # def _is_valid_username(val):
 # def _is_valid_state(val):
