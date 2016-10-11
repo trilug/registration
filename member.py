@@ -23,8 +23,14 @@ def _is_valid_name(val):
     return ((re.search(r"[^-\w '.,]", val) == None) and
             (re.search(r"\A[^-0-9 '.]", val) != None))
 
+# This is a really loose definition of "valid address" - we're pretty
+# much just whitelisting characters we consider okay to have in an
+# address and making sure it's not empty.
 def _is_valid_address(val):
-    return len(val) > 0 and re.search(r"[^-\w '#.]", val) == None
+    return ((len(val) > 0) and
+            (re.search(r"[^-\w '#.,]", val) == None) and
+            (re.search(r"\A\S", val) != None) and
+            (re.search(r"\S\Z", val) != None))
 
 def _is_valid_zipcode(val):
     return re.match(r'\d{5}(?:-\d{4})?\Z', val) != None
@@ -33,6 +39,8 @@ def _is_valid_username(val):
     return ((re.search(r"[^-\w.]",  val) == None) and
             (re.search(r"^[a-zA-Z]", val) != None))
 
+# Yeah, ok, so "ZZ" isn't actually a "valid" state.  We'll deal with that
+# when it becomes a real issue.  :P
 def _is_valid_state(val):
     return re.search(r'\A[a-zA-Z][a-zA-Z]\Z', val) != None
 

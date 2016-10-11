@@ -3,53 +3,70 @@ import pytest
 
 from copy import deepcopy
 
+#
 # General Member class tests.
-CASE = {'minimal':{
+#
+MEMBER = {'minimal':{
             'data':{
                 'first':'myfn', 'last':'myln', 'addr1':'myad1', 'city':'mycty',
                 'state':'st', 'zipcode':'12345', 'email':'tester@example.com'
                 },
-            'expected':True}}
+            'keys-same':True,
+            'vals-same':True,
+            'len-same':True}}
 
-CASE['min-plus-username'] = deepcopy(CASE['minimal'])
-CASE['min-plus-username']['data']['username'] = 'myusername'
+MEMBER['min-plus-username']                     = deepcopy(MEMBER['minimal'])
+MEMBER['min-plus-username']['data']['username'] = 'myusername'
 
-CASE['min-plus-addr2'] = deepcopy(CASE['minimal'])
-CASE['min-plus-addr2']['data']['addr2'] = 'myad2'
+MEMBER['min-plus-addr2']                        = deepcopy(MEMBER['minimal'])
+MEMBER['min-plus-addr2']['data']['addr2']       = 'myad2'
 
-CASE['full'] = deepcopy(CASE['min-plus-username'])
-CASE['full']['data']['addr2'] = 'myad2'
+MEMBER['full']                                  = deepcopy(MEMBER['min-plus-username'])
+MEMBER['full']['data']['addr2']                 = 'myad2'
 
-CASE['bogus'] = deepcopy(CASE['minimal'])
-CASE['bogus']['data']['nosuchfield'] = 'bogosity'
-CASE['bogus']['expected'] = False
+MEMBER['bogus']                                 = deepcopy(MEMBER['minimal'])
+MEMBER['bogus']['data']['nosuchfield']          = 'bogosity'
+MEMBER['bogus']['keys-same']                    = False
+MEMBER['bogus']['vals-same']                    = False
+MEMBER['bogus']['len-same']                     = False
 
-@pytest.fixture(scope='module', params=list(CASE.values()), ids=list(CASE.keys()))
-def case(request):
+@pytest.fixture(scope='module', params=list(MEMBER.values()), ids=list(MEMBER.keys()))
+def testmember(request):
     return {
             'source':request.param['data'],
             'generated':member.Member(request.param['data']),
-            'expected':request.param['expected'],
+            'vals-same':request.param['vals-same'],
+            'keys-same':request.param['keys-same'],
+            'len-same':request.param['len-same'],
            }
 
-def test_values(case):
-    assert (set(case['source'].values()) == set(case['generated'].values())) == case['expected']
+def test_values(testmember):
+    assert ((set(testmember['source'].values()) == set(testmember['generated'].values()))
+                == testmember['vals-same'])
 
-def test_keys(case):
-    assert (set(case['source'].keys()) == set(case['generated'].keys())) == case['expected']
+def test_keys(testmember):
+    assert ((set(testmember['source'].keys()) == set(testmember['generated'].keys()))
+                == testmember['keys-same'])
 
-def test_name(case):
-    assert case['generated'].name() == case['source']['first'] + ' ' + case['source']['last']
+def test_name(testmember):
+    assert (testmember['generated'].name()
+                == testmember['source']['first'] + ' ' + testmember['source']['last'])
 
-def test_wants_shell(case):
-    assert case['generated'].wants_shell() == ('username' in case['source'])
+def test_wants_shell(testmember):
+    assert testmember['generated'].wants_shell() == ('username' in testmember['source'])
 
-def test_shell_values(case):
-    if case['generated'].wants_shell():
-        assert (case['generated'].shell_values() == list(case['source'][k] for k in ('username', 'first', 'last', 'email'))) == case['expected']
+def test_shell_values(testmember):
+    if testmember['generated'].wants_shell():
+        assert ((testmember['generated'].shell_values()
+                    == list(testmember['source'][k] for k in ('username', 'first', 'last', 'email'))))
 
-def test_len(case):
-    assert (len(case['source']) == len(case['generated'])) == case['expected']
+def test_len(testmember):
+    assert (len(testmember['source']) == len(testmember['generated'])) == testmember['len-same']
+
+def test_getitem(testmember):
+    for k in member.Member.field_names():
+        if k in testmember['generated']:
+            assert testmember['source'].get(k, None) == testmember['generated'][k]
 
 
 #
@@ -193,21 +210,93 @@ def test_is_valid_name(testname):
     assert member._is_valid_name(testname['value']) == testname['expected']
 
 
+#
+# Test the username validator
+#
+USERNAMES = {
+        'all_lowercase':           { 'value':'foobar',              'expected':True },
+        'with_uppercase':          { 'value':'Foobar',              'expected':True },
+        'with_digit':              { 'value':'foobar1',             'expected':True },
+        'all_uppercase':           { 'value':'FOOBAR',              'expected':True },
+        'with_dash':               { 'value':'foo-bar',             'expected':True },
+        'with_dot':                { 'value':'foo.bar',             'expected':True },
+        'with_underscore':         { 'value':'foo_bar',             'expected':True },
+        'dot_and_dash':            { 'value':'foo.bar-blarch',      'expected':True },
+        'dot_and_underscore':      { 'value':'foo.bar_blarch',      'expected':True },
+        'dash_and_underscore':     { 'value':'foo-bar_blarch',      'expected':True },
+        'dot_dash_and_underscore': { 'value':'foo.bar-blarch_quux', 'expected':True },
+        'umlaut':                  { 'value':'fÖo',                 'expected':True },
+        'accented_char':           { 'value':'renée',               'expected':True },
+        'empty':                   { 'value':'',                    'expected':False },
+        'leading_space':           { 'value':' foobar',             'expected':False },
+        'embedded_space':          { 'value':'foo bar',             'expected':False },
+        'trailing_space':          { 'value':'foobar ',             'expected':False },
+        'leading_dot':             { 'value':'.foobar',             'expected':False },
+        'leading_dash':            { 'value':'-foobar',             'expected':False },
+        'leading_underscore':      { 'value':'_foobar',             'expected':False },
+        'leading_tab':             { 'value':'	foobar',            'expected':False },
+        'embedded_tab':            { 'value':'foo	bar',           'expected':False },
+        'trailing_tab':            { 'value':'foobar	',          'expected':False },
+        }
+
+@pytest.fixture(scope='module', params=list(USERNAMES.values()), ids=list(USERNAMES.keys()))
+def testusername(request):
+    return request.param
+
+def test_is_valid_username(testusername):
+    assert member._is_valid_username(testusername['value']) == testusername['expected']
+
+
+#
+# Test the state validator
+#
+STATE = {
+        'all_lowercase':  { 'value':'nc',   'expected':True },
+        'with_uppercase': { 'value':'Nc',   'expected':True },
+        'all_uppercase':  { 'value':'NC',   'expected':True },
+        'empty':          { 'value':'',     'expected':False },
+        'leading_space':  { 'value':' NC',  'expected':False },
+        'embedded_space': { 'value':'N C',  'expected':False },
+        'trailing_space': { 'value':'NC ',  'expected':False },
+        'leading_dot':    { 'value':'.NC',  'expected':False },
+        'embedded_dots':  { 'value':'N.C.', 'expected':False },
+        }
+
+@pytest.fixture(scope='module', params=list(STATE.values()), ids=list(STATE.keys()))
+def teststate(request):
+    return request.param
+
+def test_is_valid_state(teststate):
+    assert member._is_valid_state(teststate['value']) == teststate['expected']
+
+
+#
+# Test the address validator
+#
+ADDRESS = {
+        'plain_0':        { 'value':'123 Main Street',         'expected':True },
+        'plain_1':        { 'value':'#1 Main Street',          'expected':True },
+        'apartment_0':    { 'value':'123 Main Street, Apt. 4', 'expected':True },
+        'apartment_1':    { 'value':'123 Main Street, #4',     'expected':True },
+        'po_box':         { 'value':'P.O. Box 1234',           'expected':True },
+        'apostrophe':     { 'value':"123 O'Leary Street",      'expected':True },
+        'empty':          { 'value':'',                        'expected':False },
+        'leading_space':  { 'value':' 123 Main Street',        'expected':False },
+        'trailing_space': { 'value':'123 Main Street ',        'expected':False },
+        'bad_char_0':     { 'value':'123 @Main Street',        'expected':False },
+        'bad_char_1':     { 'value':'123 %Main Street',        'expected':False },
+        }
+
+@pytest.fixture(scope='module', params=list(ADDRESS.values()), ids=list(ADDRESS.keys()))
+def testaddress(request):
+    return request.param
+
+def test_is_valid_address(testaddress):
+    assert member._is_valid_address(testaddress['value']) == testaddress['expected']
+
+
 ###
 ### TBD...
 ###
-#    def field_names(cls):
 #    def optional_field_names(cls):
-#    def __getitem__(self, key):
 #    def __setitem__(self, key, val):
-#    def __init__(self, init_vals={}):
-#    def __contains__(self, key):
-#    def __len__(self):
-#    def keys(self):
-#    def values(self):
-#    def name(self):
-#    def wants_shell(self):
-#    def shell_values(self):
-# def _is_valid_address(val):
-# def _is_valid_username(val):
-# def _is_valid_state(val):
