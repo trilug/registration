@@ -6,7 +6,7 @@ import time
 
 from member import Member
 
-_actions        = ('del', 'mod', 'reg')
+_actions        = ('del', 'mod', 'reg', 'act')
 _allowed_fields = Member.field_names() + _actions
 
 def _print_err(*args, **kwargs):
