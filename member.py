@@ -1,7 +1,9 @@
 import re
 
-def _is_numeric(val):
-    return len(val) > 0 and re.search(r'\D', str(val)) == None
+# Thin wrapper around a Python built-in, but it allows for a uniform
+# validation interface below.
+def _is_integer(val):
+    return isinstance(val, int)
 
 # This is a *really* loose definition of a "valid" email.  Only checking
 # for basic structure, and not a lot else.  Basically, a word character,
@@ -64,7 +66,7 @@ class Member():
             'zipcode':  _is_valid_zipcode,
             'email':    _is_valid_email,
             'username': lambda f: f == None or _is_valid_username(f),
-            'reqid':    _is_numeric,
+            'reqid':    _is_integer,
         }
 
     @classmethod

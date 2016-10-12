@@ -30,7 +30,7 @@ class RegDb():
                                 addr2 TEXT,
                                 city TEXT,
                                 state TEXT,
-                                zipcode INTEGER,
+                                zipcode TEXT,
                                 username TEXT unique)'''.format(_tablename))
 
         except sqlite3.OperationalError:
@@ -46,7 +46,6 @@ class RegDb():
 
         # Quick-n-dirty little utility dict to ensure data integrity below.
         fix = {
-                'zipcode': lambda k: int(k),
                 'reqid':   lambda k: int(k),
               }
 

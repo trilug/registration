@@ -103,32 +103,22 @@ def test_is_valid_zipcode(testzip):
 
 
 #
-# Test the numeric validator
+# Test the integer validator
 #
 NUMS = {
-        'plain':                   { 'value':'12345',       'expected':True },
-        'leading_zero':            { 'value':'01234',       'expected':True },
-        'float':                   { 'value':'12345.6789',  'expected':False },
-        'with_letter':             { 'value':'X2345',       'expected':False },
-        'no_number':               { 'value':'Spam',        'expected':False },
-        'empty':                   { 'value':'',            'expected':False },
-        'plain_leading_spaces':    { 'value':' 12345',      'expected':False },
-        'plain_trailing_spaces':   { 'value':'12345 ',      'expected':False },
-        'plain_embedded_spaces':   { 'value':'123 45',      'expected':False },
-        'float_leading_spaces':    { 'value':' 12345.6789', 'expected':False },
-        'float_trailing_spaces':   { 'value':'12345.6789 ', 'expected':False },
-        'float_embedded_spaces_1': { 'value':'123 45.6789', 'expected':False },
-        'float_embedded_spaces_2': { 'value':'12345 .6789', 'expected':False },
-        'float_embedded_spaces_3': { 'value':'12345. 6789', 'expected':False },
-        'float_embedded_spaces_4': { 'value':'12345.67 89', 'expected':False },
+        'plain':        { 'value':12345,      'expected':True },
+        'float':        { 'value':12345.6789, 'expected':False },
+        'with_letter':  { 'value':'X2345',    'expected':False },
+        'no_numbers':   { 'value':'Spam',     'expected':False },
+        'empty':        { 'value':'',         'expected':False },
         }
 
 @pytest.fixture(scope='module', params=list(NUMS.values()), ids=list(NUMS.keys()))
 def testnum(request):
     return request.param
 
-def test_is_numeric(testnum):
-    assert member._is_numeric(testnum['value']) == testnum['expected']
+def test_is_integer(testnum):
+    assert member._is_integer(testnum['value']) == testnum['expected']
 
 #
 # Test the email validator

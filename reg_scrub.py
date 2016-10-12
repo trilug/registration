@@ -1,10 +1,18 @@
 import copy
 import html
 import re
+import sys
+import time
+
 from member import Member
 
 _actions        = ('del', 'mod', 'reg')
 _allowed_fields = Member.field_names() + _actions
+
+def _print_err(*args, **kwargs):
+    print(time.strftime("[%a %b %d %H:%M:%S %Y] ", time.localtime(time.time())), file=sys.stderr, end='')
+    print("[{}] ".format(__file__), file=sys.stderr, end='')
+    print(*args, file=sys.stderr, **kwargs)
 
 def cleanse_and_validate(web_form):
     cleansed_form = sanitize(web_form)
@@ -16,6 +24,7 @@ def cleanse_and_validate(web_form):
                 tmp.pop(f+'_'+reqid)
             except KeyError:
                 if f not in _actions and f not in Member.optional_field_names():
+                    _print_err("Missing required field: {}".format(f))
                     missing_field = True
         if len(tmp) or missing_field:
             cleansed_form.pop(reqid)
@@ -51,7 +60,6 @@ def sanitize(web_form):
                 if reqid not in clean_vars:
                     clean_vars[reqid] = {}
                 clean_vars[reqid][var] = html.escape(web_form[var].value)
-
     return clean_vars
 
 def name_ok(name):
@@ -63,6 +71,7 @@ def name_ok(name):
         if not re.search(r'\D', varparts[1]):
             if varparts[0] in _allowed_fields:
                 return True
+    _print_err("Invalid name: {}".format(name))
     return False
 
 def val_ok(string):
@@ -71,6 +80,7 @@ def val_ok(string):
     # If any character besides those listed in the character class below
     # are in the string, then we call shenanigans.  Otherwise, we'll say
     # it's legal.
-    if not re.search(r'[^-a-zA-Z0-9_.@#+ \']', string):
+    if not re.search(r'[^-a-zA-Z0-9_.@#,+ \']', string):
         return True
+    _print_err("Bad value: {}".format(string))
     return False
