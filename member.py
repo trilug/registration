@@ -34,15 +34,18 @@ def _is_valid_address(val):
             (re.search(r"\A\S", val) != None) and
             (re.search(r"\S\Z", val) != None))
 
+# Strictly either 5 digits, or 5 digits, a dash, and 4 digits.
 def _is_valid_zipcode(val):
     return re.match(r'\d{5}(?:-\d{4})?\Z', val) != None
 
+# A username can't contain anything but dots, dashes, and word characters,
+# and must begin with a letter.
 def _is_valid_username(val):
     return ((re.search(r"[^-\w.]",  val) == None) and
             (re.search(r"^[a-zA-Z]", val) != None))
 
-# Yeah, ok, so "ZZ" isn't actually a "valid" state.  We'll deal with that
-# when it becomes a real issue.  :P
+# Yeah, ok, so "ZZ" isn't actually a "valid" state, for example.  We'll
+# deal with that when it becomes a real issue.  :P
 def _is_valid_state(val):
     return re.search(r'\A[a-zA-Z][a-zA-Z]\Z', val) != None
 
@@ -66,7 +69,6 @@ class Member():
             'zipcode':  _is_valid_zipcode,
             'email':    _is_valid_email,
             'username': lambda f: f == None or _is_valid_username(f),
-            'reqid':    _is_integer,
         }
 
     @classmethod
@@ -81,7 +83,11 @@ class Member():
         return cls._optional_fields
 
     def __init__(self, init_vals={}):
-        '''Nothing to do other than populate the data members.'''
+        '''Nothing to do other than populate the data members.  We ignore
+        any spurious fields that are provided in the input by using the
+        Member field names as the source of key names to set and only
+        setting those which are found in init_vals.  Note that validation
+        of the values is delegated to the __setitem__ method.'''
         self._field = {}
         for field in self.__class__.field_names():
             if field in init_vals:
@@ -89,12 +95,12 @@ class Member():
 
     def __contains__(self, key):
         '''Indicate whether a field is set for the Member.'''
-        if key in self._field:
-            return True
-        return False
+        return key in self._field
 
     def __getitem__(self, key):
-        '''Retrieve the values of one of the fields.'''
+        '''Retrieve the values of one of the fields.  We allow the regular
+        Python KeyError to be thrown on a bad field name.  No need to set
+        anything special up for that.'''
         return self._field[key]
 
     def __setitem__(self, key, val):
@@ -132,8 +138,10 @@ class Member():
 
 
 class Requester(Member):
-    '''A Member after they have been assigned a request id, generally
+    '''A Member after they have been assigned a request id.  Probably
     one who's been fetched from the database.'''
 
-    _mandatory_fields = Member._mandatory_fields + tuple(['reqid'])
-    _all_fields       = _mandatory_fields + Member._optional_fields
+    _mandatory_fields     = Member._mandatory_fields + tuple(['reqid'])
+    _all_fields           = Member._all_fields       + tuple(['reqid'])
+    _valid_field          = Member._valid_field
+    _valid_field['reqid'] = _is_integer
