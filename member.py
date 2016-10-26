@@ -128,9 +128,7 @@ class Member():
     def wants_shell(self):
         '''Returns a boolean indicating whether or not the new member has
         requested shell/email access.'''
-        if ('username' in self._field) and self['username']:
-            return True
-        return False
+        return ('username' in self._field) and self['username']
 
     def shell_values(self):
         '''Return the fields necessary to create a shell account.'''
