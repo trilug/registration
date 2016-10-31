@@ -36,6 +36,11 @@
       margin-left: auto;
       margin-right: auto;
     }
+
+    .optional:before {
+      content: "[*]";
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -76,9 +81,8 @@
 
     <br/>
 
-    <label>
+    <label class="optional">
       Street Address 2
-      <strong>[*]</strong>
       <input name="addr2" />
     </label>
 
@@ -107,14 +111,12 @@
 
     <br/>
 
-    <label>
+    <label class="optional">
       Preferred User ID
-      <strong>[*]</strong>
       <input name="username" />
     </label>
 
-    <p>
-      <strong>[*]</strong>
+    <p class="optional">
       Optional fields. You can leave the User ID blank if you don't want shell or email.
     </p>
 
